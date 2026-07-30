@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
+
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Toaster } from "sonner";
 import { GetMe } from "@/components/service/getme";
 
-const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'});
+const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,21 +30,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let user = null;
+  try {
+    user = await GetMe();
+  } catch (error) {
+    user = null;
+  }
 
-
-const user =await GetMe()
-
-
-  return (
-    <html
-      lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", publicSans.variable)}
-    >
-  
-      <body className="min-h-full flex flex-col">{children}
-<Toaster position="top-right" richColors ></Toaster>
-
-      </body>
-    </html>
-  );
+   return (
+    // এখানে কোনো <html> বা <body> থাকবে না, শুধু আপনার দরকারী ডিভ বা ফ্র্যাগমেন্ট থাকবে
+   
+    <div className="w-full">
+         <Navbar user={user}></Navbar>
+      {children}
+      <Footer></Footer>
+    </div>
+  )
 }

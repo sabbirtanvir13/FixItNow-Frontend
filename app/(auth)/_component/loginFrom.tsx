@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useActionState, useEffect } from 'react'
 import { 
   Card, 
   CardContent, 
@@ -13,8 +13,23 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Mail, Lock } from 'lucide-react'
+import { loginAction } from '../_action/authAction'
+import { toast } from 'sonner'
 
 const LoginForm = () => {
+  // 1. Moved hooks inside the component body
+  const [state, action, pending] = useActionState(loginAction, null);
+
+  useEffect(() => {
+    if (!state) return;
+
+    if (state.success === false) {
+      toast.error(state.message || "Sign In failed");
+    } else if (state.success === true) {
+      toast.success("Welcome back to FixItNow!");
+    }
+  }, [state]);
+
   return (
     <Card className="w-full max-w-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-6 sm:p-10">
       <CardHeader className="space-y-3 text-center pb-6 pt-2">
@@ -60,7 +75,7 @@ const LoginForm = () => {
         </div>
 
         {/* Form Fields */}
-        <form className="space-y-5">
+        <form action={action} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-slate-700 dark:text-slate-300 font-semibold">Email</Label>
               <div className="relative">
@@ -97,7 +112,7 @@ const LoginForm = () => {
             </div>
 
             <Button className="w-full h-12 text-base rounded-xl font-bold shadow-md hover:shadow-lg transition-all pt-1 mt-2" type="submit">
-              Sign In
+              {pending ? "Submitting..." : "Sign In"}
             </Button>
         </form>
       </CardContent>

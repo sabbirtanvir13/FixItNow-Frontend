@@ -3,7 +3,7 @@ import { Footer } from '@/components/shared/footer';
 import { Navbar } from '@/components/shared/navbar';
 import React from 'react';
 
-export default async function  LayoutAuth({
+export default async function  LayoutDashboard({
   children,
 }: {
   children: React.ReactNode;

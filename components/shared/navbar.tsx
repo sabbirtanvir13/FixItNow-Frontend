@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard,
   BarChart2,
@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { logout } from "../service/logout"
+import { toast } from "sonner"
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
@@ -44,15 +46,82 @@ const navLinks = [
 ]
 
 const dropdownItems = [
-  { label: "View Profile", icon: User },
-  { label: "Account Settings", icon: Settings },
-  { label: "Billing", icon: CreditCard },
-  { label: "Notifications", icon: Bell },
+  { label: "View Profile", href: "/profile", icon: User },
+  { label: "Account Settings", href: "/settings", icon: Settings },
+  { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Notifications", href: "/notifications", icon: Bell },
 ]
 
-export function Navbar() {
-  const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
+export type ITechnicianProfile = {
+  id: string;
+  userId: string;
+  profilePhoto: string | null;
+  bio: string | null;
+  experience_years: number | null;
+  total_reviews: number;
+  skills: string[];
+  location: string | null;
+  hourly_rate: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type IUserProfile = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  active_status: string;
+  created_at: string;
+  updated_at: string;
+  technicianProfile?: ITechnicianProfile | null;
+};
+
+export type IUser = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    profile: IUserProfile;
+  };
+};
+
+type NavbarProps = {
+  user?: IUser;
+};
+
+export function Navbar({ user }: NavbarProps) {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLogout,setIsLogout]=useState(false)
+  const router=useRouter()
+  // Extract profile data safely if user exists
+  const profile = user?.data?.profile;
+  const userInitials = profile?.name
+    ? profile.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "U";
+
+  const handleUserMenuAction = async (action: string) => {
+    if (action === "logout") {
+      await logout();
+      setIsLogout(true)
+    }
+  };
+
+
+useEffect(()=>{
+  if(isLogout){
+    toast.success("User Sign Out Successfully")
+    router.push("/login")
+  }
+},[isLogout,router])
+
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl backdrop-saturate-150">
@@ -97,84 +166,101 @@ export function Navbar() {
         {/* ── Right Side ── */}
         <div className="flex items-center gap-3">
 
-          {/* Profile Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="relative rounded-full ring-2 ring-border hover:ring-primary/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
-                aria-label="Open user menu"
-              >
-                <Avatar className="size-9 pointer-events-none">
-                  <AvatarImage
-                    src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex"
-                    alt="Alex Rivera"
-                  />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                    AR
-                  </AvatarFallback>
-                </Avatar>
-                {/* Online indicator */}
-                <span
-                  className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-background"
-                  aria-hidden="true"
-                />
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              sideOffset={10}
-              className="w-60 p-1.5"
-            >
-              {/* User Header */}
-              <div className="px-2 py-2.5">
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-9 shrink-0">
+          {profile ? (
+            /* Profile Dropdown (Logged In) */
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="relative rounded-full ring-2 ring-border hover:ring-primary/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+                  aria-label="Open user menu"
+                >
+                  <Avatar className="size-9 pointer-events-none">
                     <AvatarImage
-                      src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex"
-                      alt="Alex Rivera"
+                      src={profile.technicianProfile?.profilePhoto || "https://api.dicebear.com/9.x/avataaars/svg?seed=" + profile.name}
+                      alt={profile.name}
                     />
                     <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                      AR
+                      {userInitials}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col min-w-0">
-                    <span className="truncate text-sm font-semibold text-foreground leading-tight">
-                      Alex Rivera
-                    </span>
-                    <span className="truncate text-xs text-muted-foreground leading-tight mt-0.5">
-                      alex@example.com
-                    </span>
+                  {/* Online indicator */}
+                  {profile.active_status === "Active" && (
+                    <span
+                      className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-background"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                sideOffset={10}
+                className="w-60 p-1.5"
+              >
+                {/* User Header */}
+                <div className="px-2 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-9 shrink-0">
+                      <AvatarImage
+                        src={profile.technicianProfile?.profilePhoto || "https://api.dicebear.com/9.x/avataaars/svg?seed=" + profile.name}
+                        alt={profile.name}
+                      />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                        {userInitials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="truncate text-sm font-semibold text-foreground leading-tight">
+                        {profile.name}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground leading-tight mt-0.5">
+                        {profile.email}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <DropdownMenuSeparator className="my-1" />
+                <DropdownMenuSeparator className="my-1" />
 
-              <DropdownMenuGroup>
-                {dropdownItems.map(({ label, icon: Icon }) => (
-                  <DropdownMenuItem
-                    key={label}
-                    className="flex items-center gap-2.5 px-2 py-2 rounded-md cursor-pointer"
-                  >
-                    <Icon className="size-4 text-muted-foreground shrink-0" />
-                    <span className="text-sm">{label}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
+                <DropdownMenuGroup>
+                  {dropdownItems.map(({ label, href, icon: Icon }) => (
+                    <DropdownMenuItem
+                      key={label}
+                      asChild
+                    >
+                      <Link href={href} className="flex items-center gap-2.5 px-2 py-2 rounded-md cursor-pointer">
+                        <Icon className="size-4 text-muted-foreground shrink-0" />
+                        <span className="text-sm">{label}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
 
-              <DropdownMenuSeparator className="my-1" />
+                <DropdownMenuSeparator className="my-1" />
 
-              {/* Logout */}
-              <DropdownMenuItem
-                className="flex items-center gap-2.5 px-2 py-2 rounded-md cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
-              >
-                <LogOut className="size-4 shrink-0" />
-                <span className="text-sm font-medium">Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {/* Logout */}
+                <DropdownMenuItem
+                  onClick={() => handleUserMenuAction("logout")}
+                  className="flex items-center gap-2.5 px-2 py-2 rounded-md cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/15"
+                >
+                  <LogOut className="size-4 shrink-0" />
+                  <span className="text-sm font-medium">Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            /* Sign In / Sign Up Buttons (Logged Out) */
+            <div className="hidden sm:flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          )}
 
           {/* Mobile Hamburger Drawer */}
           <div className="md:hidden">
@@ -233,35 +319,49 @@ export function Navbar() {
                   </nav>
                 </div>
 
-                {/* Mobile User Card */}
+                {/* Mobile User Card or Auth Buttons */}
                 <div className="p-4 border-t border-border bg-background">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="size-9 shrink-0">
-                      <AvatarImage
-                        src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex"
-                        alt="Alex Rivera"
-                      />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                        AR
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="truncate text-sm font-semibold text-foreground leading-tight">
-                        Alex Rivera
-                      </span>
-                      <span className="truncate text-xs text-muted-foreground leading-tight mt-0.5">
-                        alex@example.com
-                      </span>
+                  {profile ? (
+                    <div className="flex items-center gap-3">
+                      <Avatar className="size-9 shrink-0">
+                        <AvatarImage
+                          src={profile.technicianProfile?.profilePhoto || "https://api.dicebear.com/9.x/avataaars/svg?seed=" + profile.name}
+                          alt={profile.name}
+                        />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                          {userInitials}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="truncate text-sm font-semibold text-foreground leading-tight">
+                          {profile.name}
+                        </span>
+                        <span className="truncate text-xs text-muted-foreground leading-tight mt-0.5">
+                          {profile.email}
+                        </span>
+                      </div>
+
+                      {/* Logout */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleUserMenuAction("logout")}
+                        className="size-8 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        aria-label="Log out"
+                      >
+                        <LogOut className="size-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      aria-label="Log out"
-                    >
-                      <LogOut className="size-4" />
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link href="/login" onClick={() => setMobileOpen(false)}>Sign In</Link>
+                      </Button>
+                      <Button className="w-full" asChild>
+                        <Link href="/signup" onClick={() => setMobileOpen(false)}>Sign Up</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
