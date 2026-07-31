@@ -58,12 +58,12 @@ export const loginAction = async (prevState: LoginState, fromData: FormData) => 
       role: string;
     };
 
-    if (decodedToken.role === "admin") {
-      redirect("/admin");
+    if (decodedToken.role === "Admin") {
+      redirect("/dashboard/admin");
     } else if (decodedToken.role === "Technician") {
-      redirect("/technician");
+      redirect("/dashboard/technician");
     } else if (decodedToken.role === "Customer") {
-      redirect("/");
+      redirect("/dashboard/customer");
     } else {
       redirect("/login");
     }
