@@ -148,15 +148,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // Role Protection
-  if (pathname.startsWith("/admin") && userRole !== "Admin") {
+  if (
+    (pathname === "/admin" || pathname.startsWith("/admin/")) &&
+    userRole !== "Admin"
+  ) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   } else if (
-    pathname.startsWith("/technician") &&
+    (pathname === "/technician" || pathname.startsWith("/technician/")) &&
     userRole !== "Technician"
   ) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   } else if (
-    pathname.startsWith("/customer") &&
+    (pathname === "/customer" || pathname.startsWith("/customer/")) &&
     userRole !== "Customer"
   ) {
     return NextResponse.redirect(new URL("/not-found", request.url));
