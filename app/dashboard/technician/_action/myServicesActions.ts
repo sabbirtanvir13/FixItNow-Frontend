@@ -8,17 +8,17 @@ export const isAccessTokenExist = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
   console.log(
-    "[Action] Checking Access Token:",
-    token ? "Token Found ✅" : "Token Not Found ❌"
+    "🔑 [Token Check] Checking Access Token:",
+    token ? `Token Found ✅ (Length: ${token.length})` : "Token Not Found ❌"
   );
   return token;
 };
 
 // Response হ্যান্ডেল করার জন্য হেল্পার ফাংশন
-const handleApiResponse = async (res: Response) => {
+const handleApiResponse = async (res: Response, actionName: string) => {
   const contentType = res.headers.get("content-type");
   console.log(
-    "[Action] Response Status:",
+    `🌐 [${actionName}] Response Status:`,
     res.status,
     "| Content-Type:",
     contentType
@@ -26,7 +26,7 @@ const handleApiResponse = async (res: Response) => {
 
   if (!contentType || !contentType.includes("application/json")) {
     const text = await res.text();
-    console.error("Non-JSON response from backend:", text);
+    console.error(`❌ [${actionName}] Non-JSON response from backend:`, text);
     return {
       success: false,
       statusCode: res.status,
@@ -35,7 +35,7 @@ const handleApiResponse = async (res: Response) => {
     };
   }
   const jsonRes = await res.json();
-  console.log("[Action] Parsed JSON Response:", jsonRes);
+  console.log(`✅ [${actionName}] Parsed JSON Response:`, JSON.stringify(jsonRes, null, 2));
   return jsonRes;
 };
 
@@ -46,21 +46,13 @@ interface ActionResponse {
   data?: unknown;
 }
 
-// // Environment Variable Configuration
-// const BACKEND_URL =
-//   process.env.BACKEND_API_URL ||
-//   process.env.NEXT_PUBLIC_BACKEND_API_URL ||
-//   "https://fixitnow-backend-hi9a.onrender.com";
-
-// const API_BASE = BACKEND_URL.replace(/\/api\/?$/, "");
-
 // ==========================================
 // 1. Create Service Action
 // ==========================================
 export async function createService(
   formData: FormData
 ): Promise<ActionResponse> {
-  console.log("[Action] createService called 🚀");
+  console.log("🚀 ================= [CREATE SERVICE INITIATED] ================= 🚀");
   try {
     const category_id = formData.get("category_id");
     const title = formData.get("title");
@@ -78,17 +70,13 @@ export async function createService(
       location: location ? String(location) : "",
     };
 
-    console.log("[Action] createService Payload:", payload);
-
     const accessToken = await isAccessTokenExist();
     if (!accessToken) {
-      console.error("[Action] createService Error: User not logged in!");
+      console.error("❌ [Create Service] Error: User not logged in!");
       return { success: false, message: "User not logged in!" };
     }
 
     const backendUrl = `${process.env.BACKEND_API_URL}/api/services`;
-    console.log("[Action] Fetching URL:", backendUrl);
-
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
@@ -98,22 +86,17 @@ export async function createService(
       body: JSON.stringify(payload),
     });
 
-    const result = (await handleApiResponse(response)) as ActionResponse;
+    const result = (await handleApiResponse(response, "Create Service")) as ActionResponse;
 
     if (result.success) {
-      console.log(
-        "[Action] Service created successfully, revalidating tags"
-      );
-      // Next.js 15+ compatible revalidateTag syntax
       revalidateTag("my-services", "max");
       revalidateTag("public-services", "max");
     }
 
     return result;
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Something went wrong";
-    console.error("[Action] createService Exception Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+    console.error("💥 [Create Service] Exception Error:", error);
     return { success: false, message: errorMessage };
   }
 }
@@ -122,18 +105,16 @@ export async function createService(
 // 2. Get My Services Action
 // ==========================================
 export const getMyServices = async (): Promise<ActionResponse> => {
-  console.log("[Action] getMyServices called 📥");
+  console.log("📥 ================= [GET MY SERVICES INITIATED] ================= 📥");
   const accessToken = await isAccessTokenExist();
 
   if (!accessToken) {
-    console.error("[Action] getMyServices Error: User not logged in!");
+    console.error("❌ [Get My Services] Error: User not logged in!");
     return { success: false, message: "User not logged in!", data: [] };
   }
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/services/my-services`;
-    console.log("[Action] Fetching URL:", backendUrl);
-
     const res = await fetch(backendUrl, {
       method: "GET",
       headers: {
@@ -145,10 +126,10 @@ export const getMyServices = async (): Promise<ActionResponse> => {
       },
     });
 
-    const result = await handleApiResponse(res);
+    const result = await handleApiResponse(res, "Get My Services");
     return result;
   } catch (error) {
-    console.error("[Action] getMyServices Exception Error:", error);
+    console.error("💥 [Get My Services] Exception Error:", error);
     return {
       success: false,
       message: "Failed to connect to the backend server!",
@@ -164,12 +145,12 @@ export const updateService = async (
   id: string,
   formData: FormData
 ): Promise<ActionResponse> => {
-  console.log(`[Action] updateService called for ID: ${id} 📝`);
+  console.log(`📝 ================= [UPDATE SERVICE INITIATED for ID: ${id}] ================= 📝`);
 
   const category_id = String(formData.get("category_id") || "").trim();
 
   if (!category_id) {
-    console.error("[Action] updateService Error: Category selection is required!");
+    console.error("❌ [Update Service] Error: Category selection is required!");
     return { success: false, message: "Category selection is required!" };
   }
 
@@ -182,12 +163,10 @@ export const updateService = async (
     location: String(formData.get("location") || "").trim(),
   };
 
-  console.log("[Action] updateService Payload:", payload);
-
   const accessToken = await isAccessTokenExist();
 
   if (!accessToken) {
-    console.error("[Action] updateService Error: User not logged in!");
+    console.error("❌ [Update Service] Error: User not logged in!");
     return {
       success: false,
       statusCode: 401,
@@ -198,8 +177,6 @@ export const updateService = async (
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/services/${id}`;
-    console.log("[Action] Fetching URL:", backendUrl);
-
     const res = await fetch(backendUrl, {
       method: "PATCH",
       headers: {
@@ -209,18 +186,15 @@ export const updateService = async (
       body: JSON.stringify(payload),
     });
 
-    const result = await handleApiResponse(res);
+    const result = await handleApiResponse(res, "Update Service");
 
     if (result.success) {
-      console.log(
-        "[Action] Service updated successfully, revalidating tags"
-      );
       revalidateTag("my-services", "max");
       revalidateTag("public-services", "max");
     }
     return result;
   } catch (error) {
-    console.error("[Action] updateService Exception Error:", error);
+    console.error("💥 [Update Service] Exception Error:", error);
     return {
       success: false,
       message: "Failed to connect to the backend server!",
@@ -232,18 +206,16 @@ export const updateService = async (
 // 4. Delete Service Action
 // ==========================================
 export const deleteService = async (id: string): Promise<ActionResponse> => {
-  console.log(`[Action] deleteService called for ID: ${id} 🗑️`);
+  console.log(`🗑️ ================= [DELETE SERVICE INITIATED for ID: ${id}] ================= 🗑️`);
   const accessToken = await isAccessTokenExist();
 
   if (!accessToken) {
-    console.error("[Action] deleteService Error: User not logged in!");
+    console.error("❌ [Delete Service] Error: User not logged in!");
     return { success: false, message: "User not logged in!" };
   }
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/services/${id}`;
-    console.log("[Action] Fetching URL:", backendUrl);
-
     const res = await fetch(backendUrl, {
       method: "DELETE",
       headers: {
@@ -251,21 +223,47 @@ export const deleteService = async (id: string): Promise<ActionResponse> => {
       },
     });
 
-    const result = await handleApiResponse(res);
+    const result = await handleApiResponse(res, "Delete Service");
 
     if (result.success) {
-      console.log(
-        "[Action] Service deleted successfully, revalidating tags"
-      );
       revalidateTag("my-services", "max");
       revalidateTag("public-services", "max");
     }
     return result;
   } catch (error) {
-    console.error("[Action] deleteService Exception Error:", error);
+    console.error("💥 [Delete Service] Exception Error:", error);
     return {
       success: false,
       message: "Failed to connect to the backend server!",
+    };
+  }
+};
+
+// ==========================================
+// 5. Get Categories Action
+// ==========================================
+export const getCategories = async (): Promise<ActionResponse> => {
+  console.log("📂 ================= [GET CATEGORIES INITIATED] ================= 📂");
+  try {
+    const backendUrl = `${process.env.BACKEND_API_URL}/api/categories`;
+    const res = await fetch(backendUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      next: {
+        revalidate: 3600,
+      },
+    });
+
+    const result = await handleApiResponse(res, "Get Categories");
+    return result;
+  } catch (error) {
+    console.error("💥 [Get Categories] Exception Error:", error);
+    return {
+      success: false,
+      message: "Failed to connect to the backend server!",
+      data: [],
     };
   }
 };

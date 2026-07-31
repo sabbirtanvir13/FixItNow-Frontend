@@ -61,11 +61,7 @@ export const sidebarMenuItems = {
       href: "/dashboard/technician/availability",
       icon: CalendarDays,
     },
-    {
-      label: "Profile",
-      href: "/dashboard/technician/profile",
-      icon: UserRound,
-    },
+  
   ],
 
   ADMIN: [

@@ -417,7 +417,7 @@ const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Services", href: "/service", icon: LayoutDashboard },
   { label: "Technicians", href: "/technicians", icon: BarChart2 },
-  { label: "Categories", href: "/Categories", icon: FolderKanban },
+  { label: "Categories", href: "/cetagory", icon: FolderKanban },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "About", href: "/About", icon: FolderKanban },
   { label: "Contact", href: "/Contact", icon: FolderKanban },
