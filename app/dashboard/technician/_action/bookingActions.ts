@@ -1,36 +1,71 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://fixitnow-backend-hi9a.onrender.com";
+const API_BASE_URL = `${process.env.BACKEND_API_URL}/api`;
 
-// Fetch technician bookings
-export async function getTechnicianBookings(technicianId: string) {
+async function getAuthHeaders() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value || null;
+  return {
+    "Content-Type": "application/json",
+    ...(accessToken ? { Cookie: `accessToken=${accessToken}` } : {}),
+  };
+}
+
+// Fetch technician bookings (auth-based — backend identifies technician from token)
+// Always resolves to a predictable { success, data: Booking[] } shape so the UI
+// can render/refresh the tables without extra defensive checks.
+export async function getTechnicianBookings() {
   try {
-    const res = await fetch(`${API_BASE_URL}/bookings/technician/${technicianId}`, {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/technician/bookings`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       cache: "no-store",
     });
 
-    const data = await res.json();
-    return data;
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      console.error("Non-JSON response from bookings endpoint:", await res.text());
+      return { success: false, message: `Server error (${res.status})`, data: [] };
+    }
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result?.message || "Failed to fetch bookings",
+        data: [],
+      };
+    }
+
+    // Backend may return { data: [...] }, { data: { data: [...] } } or a bare array.
+    const list = Array.isArray(result?.data)
+      ? result.data
+      : Array.isArray(result?.data?.data)
+        ? result.data.data
+        : Array.isArray(result)
+          ? result
+          : [];
+
+    return { success: true, data: list, message: result?.message || "" };
   } catch (error: unknown) {
     console.error("Failed to fetch bookings:", error);
     return { success: false, message: "Failed to fetch bookings", data: [] };
   }
 }
 
+
 // Update booking status action
 export async function updateBookingStatus(bookingId: string, newStatus: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status`, {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/technician/bookings/${bookingId}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ status: newStatus }),
     });
 

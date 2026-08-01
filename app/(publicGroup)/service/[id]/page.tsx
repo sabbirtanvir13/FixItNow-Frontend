@@ -1,13 +1,14 @@
+
 import Link from "next/link";
 import Image from "next/image";
-import { getDataById } from "../../_action/serviceAction";
-import { 
-  MapPin, 
-  Clock, 
-  ShieldCheck, 
-  UserCheck, 
-  ArrowLeft, 
-  CheckCircle2, 
+import { getDataById, bookServiceAction } from "../../_action/serviceAction";
+import {
+  MapPin,
+  Clock,
+  ShieldCheck,
+  UserCheck,
+  ArrowLeft,
+  CheckCircle2,
   Sparkles,
   ChevronRight,
   Zap,
@@ -36,8 +37,8 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
           <p className="text-slate-500 text-sm leading-relaxed mb-8">
             {response.message || "The service you are looking for is currently unavailable or may have been removed."}
           </p>
-          <Link 
-            href="/service" 
+          <Link
+            href="/service"
             className="w-full bg-slate-900 hover:bg-indigo-600 text-white px-6 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-slate-900/10 hover:shadow-indigo-500/25 flex items-center justify-center gap-2 group"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
@@ -51,17 +52,21 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
   const service = response.data;
   const serviceId = service._id || service.id;
 
+  // Bind the serviceId to the server action so the form can trigger it.
+  // Flow: form submit -> bookServiceAction(serviceId) -> POST /api/bookings -> redirect(/dashboard/customer/bookings)
+  const bookAction = bookServiceAction.bind(null, serviceId);
+
   return (
     <div className="min-h-screen bg-slate-50/60 py-8 sm:py-12 selection:bg-indigo-500 selection:text-white">
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-indigo-200/30 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Navigation Bar */}
         <div className="flex items-center justify-between mb-6">
-          <Link 
-            href="/service" 
+          <Link
+            href="/service"
             className="group inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-all bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-indigo-100"
           >
             <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
@@ -78,9 +83,9 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
         <div className="space-y-8">
           <div className="relative w-full rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-200/80 shadow-2xl shadow-slate-200/50 group">
             <div className="relative w-full h-[45vh] sm:h-[55vh] min-h-[380px]">
-              <Image 
-                src={service.image || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop"} 
-                alt={service.title} 
+              <Image
+                src={service.image || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop"}
+                alt={service.title}
                 fill
                 priority
                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105 opacity-90"
@@ -97,7 +102,7 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
                     {service.category.name}
                   </span>
                 )}
-                
+
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
                   {service.title}
                 </h1>
@@ -192,14 +197,16 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
                   </div>
                 </div>
 
-                {/* 🌟 Booking Link target */}
-                <Link 
-                  href={`/checkout/${serviceId}`}
-                  className="group relative w-full bg-slate-900 hover:bg-indigo-600 text-white py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/25 flex items-center justify-center gap-2"
-                >
-                  <span>Book Service Now</span>
-                  <ChevronRight className="size-5 transition-transform group-hover:translate-x-1" />
-                </Link>
+                {/* 🌟 Book Service: creates a booking (REQUESTED), then redirects to /dashboard/customer/bookings */}
+                <form action={bookAction}>
+                  <button
+                    type="submit"
+                    className="group relative w-full bg-slate-900 hover:bg-indigo-600 text-white py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/25 flex items-center justify-center gap-2"
+                  >
+                    <span>Book Service Now</span>
+                    <ChevronRight className="size-5 transition-transform group-hover:translate-x-1" />
+                  </button>
+                </form>
 
                 <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-1.5 font-medium">
                   <ShieldCheck className="size-4 text-emerald-500" />
@@ -218,9 +225,9 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
 
                   <div className="flex flex-col items-center text-center">
                     <div className="relative w-20 h-20 mb-4">
-                      <Image 
-                        src={service.technician.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop"} 
-                        alt={service.technician.user.name} 
+                      <Image
+                        src={service.technician.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop"}
+                        alt={service.technician.user.name}
                         fill
                         className="rounded-full object-cover shadow-md ring-4 ring-white"
                       />
@@ -230,7 +237,7 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
                     </div>
 
                     <h4 className="text-lg font-extrabold text-slate-900">{service.technician.user.name}</h4>
-                    
+
                     <p className="text-xs text-slate-500 mt-1 mb-4 line-clamp-2 leading-relaxed max-w-xs">
                       {service.technician.bio || "Certified & highly skilled professional dedicated to high service standards."}
                     </p>
@@ -238,8 +245,8 @@ export default async function ServiceDetailsPage({ params }: ServiceDetailsPageP
                     {service.technician.skills && service.technician.skills.length > 0 && (
                       <div className="flex flex-wrap justify-center gap-1.5 w-full">
                         {service.technician.skills.map((skill: string, index: number) => (
-                          <span 
-                            key={index} 
+                          <span
+                            key={index}
                             className="bg-white text-slate-600 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-sm"
                           >
                             {skill}

@@ -13,7 +13,9 @@ async function getToken() {
 export async function getCustomerBookings() {
   try {
     const token = await getToken();
-    const res = await fetch(`${API_BASE_URL}/bookings`, {
+    console.log("Fetching customer bookings from:", `${API_BASE_URL}/api/bookings`);
+
+    const res = await fetch(`${API_BASE_URL}/api/bookings`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -22,6 +24,8 @@ export async function getCustomerBookings() {
     });
 
     const result = await res.json();
+    console.log("Customer Bookings API Response:", result);
+
     if (!res.ok) throw new Error(result.message || "Failed to fetch bookings");
     
     return { success: true, data: result.data || [] };
@@ -35,7 +39,9 @@ export async function getCustomerBookings() {
 export async function getSingleBooking(id: string) {
   try {
     const token = await getToken();
-    const res = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+    console.log(`Fetching booking details for ID: ${id} at ${API_BASE_URL}/api/bookings/${id}`);
+
+    const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -44,6 +50,8 @@ export async function getSingleBooking(id: string) {
     });
 
     const result = await res.json();
+    console.log(`Single Booking (${id}) API Response:`, result);
+
     if (!res.ok) throw new Error(result.message || "Failed to fetch booking details");
     
     return { success: true, data: result.data };
@@ -56,7 +64,9 @@ export async function getSingleBooking(id: string) {
 export async function cancelBookingAction(id: string) {
   try {
     const token = await getToken();
-    const res = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+    console.log(`Cancelling booking ID: ${id} at ${API_BASE_URL}/api/bookings/${id}`);
+
+    const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -66,6 +76,8 @@ export async function cancelBookingAction(id: string) {
     });
 
     const result = await res.json();
+    console.log("Cancel Booking API Response:", result);
+
     if (!res.ok) throw new Error(result.message || "Failed to cancel booking");
 
     revalidatePath("/dashboard/customer/bookings");
@@ -80,7 +92,9 @@ export async function cancelBookingAction(id: string) {
 export async function submitReviewAction(payload: { bookingId: string; rating: number; comment: string }) {
   try {
     const token = await getToken();
-    const res = await fetch(`${API_BASE_URL}/reviews`, {
+    console.log("Submitting review payload to:", `${API_BASE_URL}/api/reviews`, payload);
+
+    const res = await fetch(`${API_BASE_URL}/api/reviews`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -90,6 +104,8 @@ export async function submitReviewAction(payload: { bookingId: string; rating: n
     });
 
     const result = await res.json();
+    console.log("Submit Review API Response:", result);
+
     if (!res.ok) throw new Error(result.message || "Failed to submit review");
 
     revalidatePath("/dashboard/customer/bookings");

@@ -1,21 +1,23 @@
+
+
 "use client";
 
-import React, { useState, useTransition } from "react";
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  Mail, 
-  CheckCircle, 
-  XCircle, 
-  PlayCircle, 
+import React, { useEffect, useState, useTransition } from "react";
+import {
+  Calendar,
+  Clock,
+  User,
+  Mail,
+  CheckCircle,
+  XCircle,
+  PlayCircle,
   Briefcase,
   Loader2,
   Eye
 } from "lucide-react";
-import { updateBookingStatus } from "../_action/bookingActions";
+import { getTechnicianBookings, updateBookingStatus } from "../_action/bookingActions";
 
-type BookingStatus = "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "DECLINED";
+type BookingStatus = "REQUESTED" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "DECLINED";
 
 interface Customer {
   id: string;
@@ -57,7 +59,7 @@ interface BookingActionPageProps {
 }
 
 const tabs: { label: string; value: BookingStatus }[] = [
-  { label: "Incoming Requests", value: "PENDING" },
+  { label: "Incoming Requests", value: "REQUESTED" },
   { label: "Accepted Bookings", value: "ACCEPTED" },
   { label: "In Progress Jobs", value: "IN_PROGRESS" },
   { label: "Completed Jobs", value: "COMPLETED" },
@@ -66,10 +68,30 @@ const tabs: { label: string; value: BookingStatus }[] = [
 
 export default function BookingActionPage({ initialBookings = [] }: BookingActionPageProps) {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [activeTab, setActiveTab] = useState<BookingStatus>("ACCEPTED");
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(initialBookings[0] || null);
+  const [activeTab, setActiveTab] = useState<BookingStatus>("REQUESTED");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(
+    initialBookings.find((b) => b.status === "REQUESTED") || initialBookings[0] || null
+  );
   const [isPending, startTransition] = useTransition();
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [loading, setLoading] = useState(initialBookings.length === 0);
+
+  const loadBookings = async () => {
+    const res = await getTechnicianBookings();
+    if (res.success && res.data) {
+      setBookings(res.data);
+      setSelectedBooking((prev) => {
+        const foundCurrent = res.data.find((b: Booking) => b.id === prev?.id);
+        if (foundCurrent) return foundCurrent;
+        return res.data.find((b: Booking) => b.status === activeTab) || null;
+      });
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
 
   const filteredBookings = bookings.filter((b) => b.status === activeTab);
 
@@ -77,13 +99,9 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
     setActionMessage(null);
     startTransition(async () => {
       const res = await updateBookingStatus(bookingId, targetStatus);
-      
+
       if (res.success) {
-        const updatedList = bookings.map((b) => 
-          b.id === bookingId ? { ...b, status: targetStatus, updated_at: new Date().toISOString() } : b
-        );
-        setBookings(updatedList);
-        setSelectedBooking(updatedList.find((b) => b.id === bookingId) || null);
+        await loadBookings();
         setActionMessage({ type: "success", text: `Booking successfully marked as ${targetStatus.toLowerCase()}` });
       } else {
         setActionMessage({ type: "error", text: res.message || "Action failed. Please try again." });
@@ -91,10 +109,18 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
     });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -115,11 +141,10 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
 
         {/* Status Notification Banner */}
         {actionMessage && (
-          <div className={`p-4 rounded-xl text-sm font-medium border ${
-            actionMessage.type === "success" 
-              ? "bg-green-50 text-green-700 border-green-200" 
-              : "bg-red-50 text-red-700 border-red-200"
-          }`}>
+          <div className={`p-4 rounded-xl text-sm font-medium border ${actionMessage.type === "success"
+            ? "bg-green-50 text-green-700 border-green-200"
+            : "bg-red-50 text-red-700 border-red-200"
+            }`}>
             {actionMessage.text}
           </div>
         )}
@@ -137,16 +162,14 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
                   const firstMatch = bookings.find((b) => b.status === tab.value);
                   setSelectedBooking(firstMatch || null);
                 }}
-                className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  isActive
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${isActive
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  }`}
               >
                 <span>{tab.label}</span>
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                  isActive ? "bg-blue-700 text-white" : "bg-gray-200 text-gray-700"
-                }`}>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${isActive ? "bg-blue-700 text-white" : "bg-gray-200 text-gray-700"
+                  }`}>
                   {count}
                 </span>
               </button>
@@ -156,7 +179,7 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
 
         {/* Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
+
           {/* Left Column: Table View */}
           <div className="lg:col-span-7 space-y-4">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
@@ -187,11 +210,10 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
                           <tr
                             key={booking.id}
                             onClick={() => setSelectedBooking(booking)}
-                            className={`transition-colors cursor-pointer ${
-                              isSelected 
-                                ? "bg-blue-50/60 hover:bg-blue-50" 
-                                : "hover:bg-gray-50/80"
-                            }`}
+                            className={`transition-colors cursor-pointer ${isSelected
+                              ? "bg-blue-50/60 hover:bg-blue-50"
+                              : "hover:bg-gray-50/80"
+                              }`}
                           >
                             <td className="py-3 px-4">
                               <span className="block text-xs font-bold text-blue-600 uppercase">
@@ -220,11 +242,10 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
                                   e.stopPropagation();
                                   setSelectedBooking(booking);
                                 }}
-                                className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                                  isSelected 
-                                    ? "bg-blue-600 text-white shadow-sm" 
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
+                                className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${isSelected
+                                  ? "bg-blue-600 text-white shadow-sm"
+                                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                  }`}
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>{isSelected ? "Selected" : "View"}</span>
@@ -249,7 +270,7 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
 
               {selectedBooking ? (
                 <div className="space-y-6">
-                  
+
                   {/* Overview Card */}
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-center">
                     <div>
@@ -304,7 +325,7 @@ export default function BookingActionPage({ initialBookings = [] }: BookingActio
 
                   {/* Dynamic Action Buttons */}
                   <div className="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
-                    {selectedBooking.status === "PENDING" && (
+                    {selectedBooking.status === "REQUESTED" && (
                       <>
                         <button
                           disabled={isPending}

@@ -2,16 +2,17 @@
 
 import React, { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  User, 
-  Eye, 
-  XCircle, 
-  CreditCard, 
-  Star, 
-  Loader2 
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  User,
+  Eye,
+  XCircle,
+  CreditCard,
+  Star,
+  Loader2
 } from "lucide-react";
 import { getCustomerBookings, cancelBookingAction, submitReviewAction } from "../_action/bookingActions";
 
@@ -34,6 +35,11 @@ export default function CustomerBookingsPage() {
   const [isPending, startTransition] = useTransition();
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Next.js Navigation Hooks
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   // Review Modal States
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
@@ -49,7 +55,17 @@ export default function CustomerBookingsPage() {
       setLoading(false);
     }
     loadData();
-  }, []);
+
+    // Show success message if redirected from booking creation
+    if (searchParams.get("booked") === "true") {
+      setActionMessage({
+        type: "success",
+        text: "Booking request submitted successfully! Please wait for the technician to accept before making payment."
+      });
+      // Clean up the URL without reloading the page
+      router.replace(pathname);
+    }
+  }, [searchParams, pathname, router]);
 
   // Filter bookings based on tabs
   const filteredBookings = bookings.filter((item) => {
@@ -139,8 +155,8 @@ export default function CustomerBookingsPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              activeTab === tab 
-                ? "bg-blue-600 text-white shadow-sm" 
+              activeTab === tab
+                ? "bg-blue-600 text-white shadow-sm"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
@@ -195,7 +211,7 @@ export default function CustomerBookingsPage() {
 
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end pt-3 md:pt-0 border-t md:border-t-0 border-gray-100">
-                <Link 
+                <Link
                   href={`/dashboard/customer/bookings/${item.id}`}
                   className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg flex items-center space-x-1 transition"
                 >
@@ -204,17 +220,17 @@ export default function CustomerBookingsPage() {
                 </Link>
 
                 {item.bookingStatus === "ACCEPTED" && (
-                  <button 
-                    onClick={() => alert("Redirecting to Payment Gateway...")}
+                  <Link
+                    href={`/payment/create/${item.id}`}
                     className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg flex items-center space-x-1 transition shadow-sm"
                   >
                     <CreditCard className="w-3.5 h-3.5" />
                     <span>Pay Now</span>
-                  </button>
+                  </Link>
                 )}
 
                 {["REQUESTED", "ACCEPTED"].includes(item.bookingStatus) && (
-                  <button 
+                  <button
                     onClick={() => handleCancel(item.id)}
                     disabled={isPending}
                     className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg flex items-center space-x-1 transition"
@@ -225,7 +241,7 @@ export default function CustomerBookingsPage() {
                 )}
 
                 {item.bookingStatus === "COMPLETED" && (
-                  <button 
+                  <button
                     onClick={() => { setSelectedBookingId(item.id); setReviewModalOpen(true); }}
                     className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-medium rounded-lg flex items-center space-x-1 transition"
                   >
@@ -234,7 +250,6 @@ export default function CustomerBookingsPage() {
                   </button>
                 )}
               </div>
-
             </div>
           ))}
         </div>
@@ -248,8 +263,8 @@ export default function CustomerBookingsPage() {
             <form onSubmit={handleReviewSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Rating (1-5)</label>
-                <select 
-                  value={rating} 
+                <select
+                  value={rating}
                   onChange={(e) => setRating(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm"
                 >
@@ -260,8 +275,8 @@ export default function CustomerBookingsPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Comment</label>
-                <textarea 
-                  value={comment} 
+                <textarea
+                  value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm"
@@ -270,15 +285,15 @@ export default function CustomerBookingsPage() {
                 />
               </div>
               <div className="flex justify-end space-x-2 pt-2">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setReviewModalOpen(false)}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isPending}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium shadow-sm"
                 >
@@ -289,7 +304,6 @@ export default function CustomerBookingsPage() {
           </div>
         </div>
       )}
-
     </div>
   );
-} 
+}     
