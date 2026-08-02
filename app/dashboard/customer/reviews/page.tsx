@@ -23,6 +23,8 @@ export default function CustomerReviewsPage() {
   const [isPending, startTransition] = useTransition();
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  console.log("Customer Reviews Page Loading... 3");
+
   useEffect(() => {
     async function loadReviews() {
       const res = await getMyReviews();

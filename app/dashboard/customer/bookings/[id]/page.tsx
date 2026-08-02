@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, MapPin, User, ShieldCheck, CreditCard } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, User, ShieldCheck, CreditCard, Star, CheckCircle } from "lucide-react";
 import { getSingleBooking } from "../../_action/bookingActions";
 
-// ডাইনামিক স্ট্যাটাস ব্যাজ তৈরি করার ফাংশন
+
 const getStatusBadge = (status: string) => {
   const badges: Record<string, string> = {
     REQUESTED: "bg-yellow-100 text-yellow-700",
@@ -45,8 +45,8 @@ export default async function BookingDetailsPage({ params }: { params: Promise<{
   const displayPrice = booking.price || booking.service?.price;
   const technicianName = booking.technician?.user?.name || booking.technician?.name || "Not Assigned Yet";
   const technicianPhone = booking.technician?.phone || "Phone number unavailable";
-  const timeSlotText = booking.start_time && booking.end_time 
-    ? `${booking.start_time} - ${booking.end_time}` 
+  const timeSlotText = booking.start_time && booking.end_time
+    ? `${booking.start_time} - ${booking.end_time}`
     : (booking.timeSlot || "N/A");
 
   return (
@@ -59,7 +59,7 @@ export default async function BookingDetailsPage({ params }: { params: Promise<{
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-6">
-        
+
         {/* Header Info with Dynamic Status Badge */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-4 gap-4">
           <div>
@@ -121,7 +121,7 @@ export default async function BookingDetailsPage({ params }: { params: Promise<{
           </div>
         </div>
 
-        {/* Action Button: Pay Now (Visible when status allows payment or ACCEPTED) */}
+        {/* Action Button: Pay Now or Leave Review */}
         {(displayStatus === "ACCEPTED" || displayStatus === "REQUESTED") && displayStatus !== "PAID" && (
           <div className="pt-6 border-t border-gray-100 flex justify-end">
             <Link
@@ -131,6 +131,26 @@ export default async function BookingDetailsPage({ params }: { params: Promise<{
               <CreditCard className="w-5 h-5" />
               <span>Proceed to Payment</span>
             </Link>
+          </div>
+        )}
+
+        {/* Action Button: Leave Review (Visible when status is COMPLETED) */}
+        {displayStatus === "COMPLETED" && (
+          <div className="pt-6 border-t border-gray-100 flex justify-end">
+            {booking.review || booking.isReviewed ? (
+              <div className="flex items-center space-x-2 px-6 py-3 bg-green-50 text-green-700 border border-green-200 font-semibold rounded-lg shadow-sm">
+                <CheckCircle className="w-5 h-5" />
+                <span>Review Submitted</span>
+              </div>
+            ) : (
+              <Link
+                href={`/dashboard/customer/reviews/create/${booking.id}`}
+                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition"
+              >
+                <Star className="w-5 h-5" />
+                <span>Leave Review</span>
+              </Link>
+            )}
           </div>
         )}
 

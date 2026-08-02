@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-const API_BASE_URL = process.env.BACKEND_API_URL || "https://fixitnow-backend-hi9a.onrender.com/api";
+const API_BASE_URL = process.env.BACKEND_API_URL || "https://fixitnow-backend-one.vercel.app/api";
 
 async function getToken() {
   const cookieStore = await cookies();
@@ -92,7 +92,12 @@ export async function cancelBookingAction(id: string) {
 export async function submitReviewAction(payload: { bookingId: string; rating: number; comment: string }) {
   try {
     const token = await getToken();
-    console.log("Submitting review payload to:", `${API_BASE_URL}/api/reviews`, payload);
+
+    const backendPayload = {
+      booking_id: payload.bookingId,
+      rating: payload.rating,
+      comment: payload.comment,
+    };
 
     const res = await fetch(`${API_BASE_URL}/api/reviews`, {
       method: "POST",
@@ -100,7 +105,7 @@ export async function submitReviewAction(payload: { bookingId: string; rating: n
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(backendPayload),
     });
 
     const result = await res.json();

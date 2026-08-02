@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-const BASE_URL = process.env.BACKEND_API_URL || "https://fixitnow-backend-hi9a.onrender.com";
+const BASE_URL = process.env.BACKEND_API_URL || "https://fixitnow-backend-one.vercel.app";
 
 async function getAuthHeaders() {
     const cookieStore = await cookies();

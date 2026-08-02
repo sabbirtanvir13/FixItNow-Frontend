@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-const API_BASE_URL = "https://fixitnow-backend-hi9a.onrender.com/api";
+const API_BASE_URL = "https://fixitnow-backend-one.vercel.app/api";
 
 async function getToken() {
   const cookieStore = await cookies();

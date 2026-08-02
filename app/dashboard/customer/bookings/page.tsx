@@ -50,7 +50,11 @@ export default function CustomerBookingsPage() {
     async function loadData() {
       const res = await getCustomerBookings();
       if (res.success) {
-        setBookings(res.data);
+        const normalizedData = res.data.map((b: any) => ({
+          ...b,
+          bookingStatus: (b.status || b.bookingStatus || "").toUpperCase()
+        }));
+        setBookings(normalizedData);
       }
       setLoading(false);
     }
