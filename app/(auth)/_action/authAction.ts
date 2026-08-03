@@ -1,3 +1,7 @@
+
+
+
+
 "use server"
 
 import { redirect } from "next/navigation"
@@ -8,7 +12,6 @@ type LoginResult = {
   success: boolean
   statusCode?: number
   message?: string
-  roleMismatch?: string
   data?: {
     accessToken: string
     refreshToken: string
@@ -18,9 +21,7 @@ type LoginResult = {
 export const loginAction = async (prevState: LoginResult | null, fromData: FormData): Promise<LoginResult> => {
   const email = fromData.get("email")
   const password = fromData.get("password")
-  const selectedRole = (fromData.get("role") as string) || "Customer"
 
-  // Defensive validation: ensure required fields are present
   if (!email || !password) {
     return { success: false, message: "Missing email or password" }
   }
@@ -57,25 +58,6 @@ export const loginAction = async (prevState: LoginResult | null, fromData: FormD
     }
 
     const backendRole = decodedToken?.role
-
-    // Role mismatch check — compare selected tab role with actual account role
-    if (
-      (selectedRole === "Customer" && backendRole === "Technician") ||
-      (selectedRole === "Technician" && backendRole === "Customer")
-    ) {
-      // Clear the cookies we just set since the role is wrong
-      cookieStore.delete("accessToken")
-      cookieStore.delete("refreshToken")
-
-      return {
-        success: false,
-        message: `Role mismatch`,
-        roleMismatch:
-          selectedRole === "Customer"
-            ? "You selected Customer but this account belongs to a Technician."
-            : "You selected Technician but this account belongs to a Customer.",
-      }
-    }
 
     // Redirect based on actual backend role
     if (backendRole === "Admin") {

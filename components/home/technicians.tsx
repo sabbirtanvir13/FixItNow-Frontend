@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 
 interface TopRatedTechniciansProps {
   technicians: any[]
+  loading?: boolean // Added loading prop
 }
 
-export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTechniciansProps) {
+export function TopRatedTechnicians({ technicians: techniciansList, loading = false }: TopRatedTechniciansProps) {
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -58,7 +59,7 @@ export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTe
           </Button>
         </div>
 
-        {/* ── Technicians Grid (Exactly 4 Cards) ── */}
+
         <motion.div
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
           variants={containerVariants}
@@ -70,11 +71,11 @@ export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTe
             <div className="col-span-full py-10 text-center text-muted-foreground">
               Loading technicians...
             </div>
-          ) : techniciansList.length > 0 ? (
+          ) : techniciansList && techniciansList.length > 0 ? (
             techniciansList.map((tech: any) => {
               const name = tech.user?.name || tech.name || "Technician"
 
-              // ইমেজ পাথ হ্যান্ডলিং
+
               let rawImage = tech.profilePhoto || tech.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop"
               if (rawImage.includes("C:\\") || rawImage.includes("C:/")) {
                 const fileName = rawImage.split(/[\\/]/).pop()
@@ -84,7 +85,7 @@ export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTe
 
               const profession = tech.skills?.[0] || tech.services?.[0]?.title || tech.profession || "Expert Technician"
 
-              // রেটিং বের করার লজিক
+
               let calculatedRating = "4.9"
               if (Array.isArray(tech.reviews) && tech.reviews.length > 0) {
                 const sum = tech.reviews.reduce((acc: number, r: any) => acc + (r.rating || 0), 0)
@@ -97,7 +98,7 @@ export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTe
 
               const reviewsCount = tech.total_reviews ?? tech.reviews?.length ?? 0
 
-              // ১. অভিজ্ঞতা: experience_years না থাকলে বায়ো থেকে বা ডিফল্ট মান
+
               let experienceText = "N/A"
               if (tech.experience_years) {
                 experienceText = `${tech.experience_years} Years`
@@ -106,10 +107,9 @@ export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTe
                 if (match) experienceText = `${match[1]} Years`
               }
 
-              // ২. মূল্য: hourly_rate না থাকলে তাদের services তালিকার প্রথম সার্ভিসের price ব্যবহার করা হবে
               const servicePrice = tech.services?.[0]?.price
               const priceDisplay = tech.hourly_rate
-                ? `$${tech.hourly_rate}/hr`
+                ? `৳${tech.hourly_rate}/hr`
                 : servicePrice
                   ? `৳${servicePrice}`
                   : "N/A"

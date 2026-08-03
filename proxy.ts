@@ -1,5 +1,3 @@
-
-
 import { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
@@ -19,8 +17,8 @@ const PUBLIC_ROUTES = [
   "/contact",
 ];
 
-// Next.js standard middleware function name is `middleware`
-export default async function middleware(request: NextRequest) {
+// Next.js 16+ requires the function name to be `proxy`
+export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const cookieStore = await cookies();
@@ -29,14 +27,14 @@ export default async function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
   let decodedAccessToken = accessToken
-    ? jwtUtils.verifyToken(
+    ? await jwtUtils.verifyToken(
       accessToken,
       process.env.JWT_ACCESS_SECRET as string
     )
     : null;
 
-  const decodedRefreshToken = refreshToken
-    ? jwtUtils.verifyToken(
+  let decodedRefreshToken = refreshToken
+    ? await jwtUtils.verifyToken(
       refreshToken,
       process.env.JWT_REFRESH_SECRET as string
     )
@@ -58,7 +56,7 @@ export default async function middleware(request: NextRequest) {
 
       accessToken = newAccessToken;
 
-      decodedAccessToken = jwtUtils.verifyToken(
+      decodedAccessToken = await jwtUtils.verifyToken(
         newAccessToken,
         process.env.JWT_ACCESS_SECRET as string
       );

@@ -2,22 +2,22 @@
 
 import { cookies } from "next/headers";
 
-// 🌟 Helper: Manage Base URL Safely
+
 const getBaseUrl = () => {
   const url = process.env.BACKEND_API_URL;
   if (!url) {
     console.warn("⚠️ BACKEND_API_URL is missing in environment variables.");
-    return "https://fixitnow-backend-one.vercel.app"; // Fallback URL
+    return "https://fixitnow-backend-one.vercel.app";
   }
   return url;
 };
 
-// 🌟 Helper: Safely Handle API Responses
+
 const handleApiResponse = async (res: Response) => {
   try {
     const contentType = res.headers.get("content-type");
 
-    // Check if the response is JSON
+
     if (!contentType || !contentType.includes("application/json")) {
       const text = await res.text();
       console.error(`[API Error] Non-JSON response (${res.status}):`, text);
@@ -30,7 +30,7 @@ const handleApiResponse = async (res: Response) => {
       };
     }
 
-    // Safely parse JSON
+
     return await res.json();
   } catch (error) {
     console.error("[API Error] Failed to parse JSON response:", error);
@@ -43,7 +43,7 @@ const handleApiResponse = async (res: Response) => {
   }
 };
 
-// 🌟 Helper: Get Auth Headers Safely
+
 const getAuthHeaders = async (): Promise<HeadersInit | null> => {
   try {
     const cookieStore = await cookies();
@@ -60,9 +60,7 @@ const getAuthHeaders = async (): Promise<HeadersInit | null> => {
   }
 };
 
-/* ============================
-   Get All Technicians (Public)
-============================ */
+
 export const getAllTechnicians = async () => {
   try {
     const res = await fetch(`${getBaseUrl()}/api/technician`, {
@@ -80,9 +78,7 @@ export const getAllTechnicians = async () => {
   }
 };
 
-/* ============================
-   Get Single Technician (Public)
-============================ */
+
 export const getTechnicianById = async (id: string) => {
   try {
     const res = await fetch(`${getBaseUrl()}/api/technician/${id}`, {
@@ -100,9 +96,7 @@ export const getTechnicianById = async (id: string) => {
   }
 };
 
-/* ============================
-   Technician Profile (Private)
-============================ */
+
 export const getTechnicianProfile = async () => {
   const headers = await getAuthHeaders();
 
@@ -131,9 +125,7 @@ export const getTechnicianProfile = async () => {
   }
 };
 
-/* ============================
-   Technician Bookings (Private)
-============================ */
+
 export const getTechnicianBookings = async () => {
   const headers = await getAuthHeaders();
 
@@ -162,19 +154,11 @@ export const getTechnicianBookings = async () => {
   }
 };
 
-/* ============================
-   Update Technician Profile
-============================ */
 
-export const updateTechnicianProfile = async (payload: Record<string, any>) => {
+
+export const updateTechnicianProfile = async (payload: any) => {
   const headers = await getAuthHeaders();
-
-  if (!headers) {
-    return {
-      success: false,
-      message: "Unauthorized - No Access Token",
-    };
-  }
+  if (!headers) return { success: false, message: "Unauthorized" };
 
   try {
     const res = await fetch(`${getBaseUrl()}/api/technician/profile`, {
@@ -188,16 +172,10 @@ export const updateTechnicianProfile = async (payload: Record<string, any>) => {
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error("[Fetch Error] updateTechnicianProfile:", error);
-    return {
-      success: false,
-      message: "Failed to update profile",
-    };
+    return { success: false, message: "Failed to update profile" };
   }
 };
-/* ============================
-   Update Availability
-============================ */
+
 export const updateAvailability = async (payload: Record<string, any>) => {
   const headers = await getAuthHeaders();
 
@@ -228,9 +206,7 @@ export const updateAvailability = async (payload: Record<string, any>) => {
   }
 };
 
-/* ============================
-   Update Booking Status
-============================ */
+
 export const updateBookingStatus = async (
   bookingId: string,
   payload: Record<string, any>

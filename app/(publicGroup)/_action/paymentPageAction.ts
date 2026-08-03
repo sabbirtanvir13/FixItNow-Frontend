@@ -13,7 +13,7 @@ async function getAuthHeaders() {
     };
 }
 
-// পেমেন্ট তৈরি এবং SSLCommerz গেটওয়ে ইউআরএল আনা
+
 export async function createPayment(bookingId: string) {
     try {
         const headers = await getAuthHeaders();
@@ -32,7 +32,6 @@ export async function createPayment(bookingId: string) {
     }
 }
 
-// পেমেন্ট কনফার্ম করা
 export async function confirmPayment(tranId: string) {
     try {
         const headers = await getAuthHeaders();
@@ -51,7 +50,6 @@ export async function confirmPayment(tranId: string) {
     }
 }
 
-// পেমেন্ট হিস্ট্রি আনা
 export async function getPaymentHistory() {
     try {
         const headers = await getAuthHeaders();
@@ -68,7 +66,7 @@ export async function getPaymentHistory() {
     }
 }
 
-// নির্দিষ্ট পেমেন্ট ডিটেইলস আনা
+
 export async function getPaymentDetails(id: string) {
     try {
         const headers = await getAuthHeaders();

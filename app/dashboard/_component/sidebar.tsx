@@ -20,7 +20,7 @@ import { logout } from "@/components/service/logout";
 
 
 interface SidebarProps {
-  user?: any; // Accepting standard user object or API response format
+  user?: any;
 }
 
 interface SidebarContentProps extends SidebarProps {
@@ -31,7 +31,7 @@ interface SidebarContentProps extends SidebarProps {
 function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
   let navItems: ISidebarItem[] = [];
 
-  // Safely extract user role regardless of response wrapper structure
+
   const role = user?.data?.profile?.role || user?.role;
 
   switch (role) {
@@ -55,7 +55,7 @@ function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
 
   return (
     <div className="flex h-full w-full flex-col justify-between border-r bg-background">
-      {/* ================= Header ================= */}
+
       <div className="flex-1 overflow-y-auto">
         <div className="border-b p-6">
           <Link
@@ -75,7 +75,7 @@ function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
           </Link>
         </div>
 
-        {/* ================= Menu ================= */}
+
         <div className="p-4">
           <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {role ?? "Dashboard"}
@@ -109,7 +109,7 @@ function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
         </div>
       </div>
 
-      {/* ================= Footer ================= */}
+
       <div className="border-t p-4">
         <Button
           variant="ghost"
@@ -130,7 +130,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
   return (
     <>
-      {/* ================= Mobile Header ================= */}
+
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 lg:hidden">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -159,7 +159,7 @@ export default function Sidebar({ user }: SidebarProps) {
         </Sheet>
       </header>
 
-      {/* ================= Desktop Fixed Sidebar ================= */}
+
       <aside className="fixed left-0 top-0 z-30 hidden h-screen w-72 border-r bg-background lg:flex">
         <SidebarContent pathname={pathname} user={user} />
       </aside>

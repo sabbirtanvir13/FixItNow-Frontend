@@ -17,12 +17,12 @@ import Image from "next/image";
 import { getAllTechnicians } from "@/app/(publicGroup)/_action/technicianAction";
 
 export default async function HomePage() {
-  // Fetch technicians server-side — the correct pattern in Next.js App Router
+
   let technicians: any[] = [];
   try {
     const response = await getAllTechnicians();
     if (response?.success) {
-      // Support response.data, response.technicians, response.results
+
       const raw = response.data ?? response.technicians ?? response.results ?? [];
       technicians = Array.isArray(raw) ? raw : raw ? [raw] : [];
     } else if (Array.isArray(response)) {

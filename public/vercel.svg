@@ -1,1 +1,82 @@
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Vibrant Blue Gradient -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066FF"/>
+      <stop offset="100%" stop-color="#0043B3"/>
+    </linearGradient>
+
+    <!-- Vibrant Orange Gradient -->
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A00"/>
+      <stop offset="100%" stop-color="#FF5500"/>
+    </linearGradient>
+
+    <!-- Subtle Drop Shadow for High-End UI Depth -->
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#002B66" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Pure White Background -->
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+
+  <g transform="translate(140, 100)">
+    <!-- Central Icon Graphic (Wrench + Clock/Checkmark Motion) -->
+    <g filter="url(#subtleShadow)">
+      
+      <!-- Clock / Speed Arc Background Shape -->
+      <path d="M 260 80 
+               A 180 180 0 1 1 110 395" 
+            fill="none" 
+            stroke="url(#blueGrad)" 
+            stroke-width="36" 
+            stroke-linecap="round"/>
+
+      <!-- Speed Motion Arrow / Checkmark Head -->
+      <path d="M 95 380 L 130 415 L 180 345" 
+            fill="none" 
+            stroke="url(#orangeGrad)" 
+            stroke-width="32" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"/>
+
+      <!-- Sleek Modern Wrench (Angled dynamically) -->
+      <g transform="translate(260, 260) rotate(-45)">
+        <!-- Wrench Handle -->
+        <rect x="-18" y="-100" width="36" height="150" rx="18" fill="url(#blueGrad)"/>
+        <!-- Wrench Head -->
+        <path d="M -35 -90 
+                 L 35 -90 
+                 L 26 -145 
+                 C 26 -165 10 -175 0 -175 
+                 C -10 -175 -26 -165 -26 -145 Z" 
+              fill="url(#blueGrad)" 
+              stroke="#FFFFFF" 
+              stroke-width="4"/>
+      </g>
+
+      <!-- Fast Motion Accent Dots -->
+      <circle cx="380" cy="140" r="10" fill="url(#orangeGrad)"/>
+      <circle cx="410" cy="200" r="6" fill="url(#orangeGrad)" opacity="0.6"/>
+    </g>
+
+    <!-- App Name Typography -->
+    <text x="260" y="580" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="64" 
+          font-weight="800" 
+          letter-spacing="-1"
+          text-anchor="middle" 
+          fill="#0F172A">Fix<tspan fill="url(#orangeGrad)">It</tspan>Now</text>
+
+    <!-- Tagline -->
+    <text x="260" y="620" 
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+          font-size="18" 
+          font-weight="600" 
+          letter-spacing="6" 
+          text-anchor="middle" 
+          fill="#64748B">EXPERT REPAIRS ON DEMAND</text>
+  </g>
+</svg>

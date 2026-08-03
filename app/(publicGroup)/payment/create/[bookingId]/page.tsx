@@ -20,7 +20,7 @@ export default function CreatePaymentPage() {
         try {
             const res = await createPayment(bookingId);
 
-            // ব্যাকএন্ড থেকে আসা পেমেন্ট গেটওয়ে ইউআরএলটি ক্যাচ করা (paymentUrl বা payment_url উভয়ই চেক করা হচ্ছে)
+
             const paymentGatewayUrl = res.data?.paymentUrl || res.data?.payment_url;
 
             if (res.success && paymentGatewayUrl) {

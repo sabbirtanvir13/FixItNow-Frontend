@@ -95,9 +95,7 @@ export const getDataById = async (endpoint: string, id: string) => {
     }
 };
 
-// Create a booking for a service, then redirect to the customer bookings page.
-// NOTE: redirect() must stay OUTSIDE try/catch because it throws internally to trigger navigation.
-// Returns void: on success redirect() throws (navigates away); on failure the error is logged.
+
 export const bookServiceAction = async (serviceId: string): Promise<void> => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value || null;
@@ -136,7 +134,7 @@ export const bookServiceAction = async (serviceId: string): Promise<void> => {
         console.error("Book Service Error:", error);
     }
 
-    // redirect() throws a NEXT_REDIRECT error — must be outside try/catch
+
     if (bookingCreated) {
         redirect("/dashboard/customer/bookings?booked=true");
     }

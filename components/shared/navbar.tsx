@@ -479,6 +479,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { logout } from "../service/logout";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
@@ -619,14 +620,31 @@ export function Navbar({ user }: NavbarProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-2xl shadow-sm transition-all duration-300">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+        {/* <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
           <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-600 shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/20">
             <Zap className="size-5 text-white" strokeWidth={2.5} fill="currentColor" />
           </div>
           <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
             FixItNow
           </span>
+        </Link> */}
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <div className="relative size-9 transition-transform duration-300 group-hover:scale-105">
+            <Image
+              src="/vercel.svg"
+              alt="FixItNow Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            FixItNow
+          </span>
         </Link>
+
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-1.5" aria-label="Main navigation">
@@ -778,7 +796,7 @@ export function Navbar({ user }: NavbarProps) {
                 className="rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 px-6 bg-primary hover:bg-primary/90"
                 asChild
               >
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/register">Sign Up</Link>
               </Button>
             </div>
           )}
@@ -903,7 +921,7 @@ export function Navbar({ user }: NavbarProps) {
                       </Button>
                       <Button className="w-full rounded-xl h-11 shadow-md" asChild>
                         <Link
-                          href="/signup"
+                          href="/register"
                           onClick={() => setMobileOpen(false)}
                         >
                           Sign Up

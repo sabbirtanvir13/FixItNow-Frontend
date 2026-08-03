@@ -10,7 +10,7 @@ async function getToken() {
   return cookieStore.get("accessToken")?.value || cookieStore.get("token")?.value || "";
 }
 
-// ১. সব ক্যাটাগরি ফেচ করা (Search, Filter, Pagination সহ)
+
 export async function getAllCategories(query?: { search?: string; status?: string; page?: number }) {
   try {
     const token = await getToken();
@@ -34,7 +34,7 @@ export async function getAllCategories(query?: { search?: string; status?: strin
   }
 }
 
-// ২. নতুন ক্যাটাগরি তৈরি করা (Create)
+
 export async function createCategory(payload: { name: string; description?: string }) {
   try {
     const token = await getToken();
@@ -58,7 +58,6 @@ export async function createCategory(payload: { name: string; description?: stri
   }
 }
 
-// ৩. ক্যাটাগরি আপডেট করা (Update)
 export async function updateCategory(id: string, payload: { name?: string; description?: string }) {
   try {
     const token = await getToken();
@@ -82,7 +81,6 @@ export async function updateCategory(id: string, payload: { name?: string; descr
   }
 }
 
-// ৪. ক্যাটাগরি স্ট্যাটাস পরিবর্তন করা (Change Status Active/Inactive)
 export async function updateCategoryStatus(id: string, status: string) {
   try {
     const token = await getToken();
@@ -106,7 +104,7 @@ export async function updateCategoryStatus(id: string, status: string) {
   }
 }
 
-// ৫. ক্যাটাগরি ডিলিট করা (Delete)
+
 export async function deleteCategory(id: string) {
   try {
     const token = await getToken();
