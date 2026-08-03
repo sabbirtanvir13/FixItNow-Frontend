@@ -1,125 +1,26 @@
-import { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 
-import { jwtUtils } from "./utils/jwt";
-import { getNewAccessToken } from "./components/service/refreshToken";
+export async function getNewAccessToken() {
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get("refreshToken")?.value;
 
-const AUTH_ROUTES = ["/login", "/register"];
-
-const PUBLIC_ROUTES = [
-  "/",
-  "/services",
-  "/technicians",
-  "/categories",
-  "/about",
-  "/contact",
-];
-
-// Next.js 16+ requires the function name to be `proxy`
-export default async function proxy(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  const cookieStore = await cookies();
-
-  let accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
-
-  let decodedAccessToken = accessToken
-    ? await jwtUtils.verifyToken(
-      accessToken,
-      process.env.JWT_ACCESS_SECRET as string
-    )
-    : null;
-
-  let decodedRefreshToken = refreshToken
-    ? await jwtUtils.verifyToken(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET as string
-    )
-    : null;
-
-  // Access Token Expired, try Refreshing
-  if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
-    const result = await getNewAccessToken();
-
-    if (result.success && result.data?.accessToken) {
-      const newAccessToken = result.data.accessToken;
-
-      cookieStore.set("accessToken", newAccessToken, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24,
-        sameSite: "lax",
-        path: "/",
-      });
-
-      accessToken = newAccessToken;
-
-      decodedAccessToken = await jwtUtils.verifyToken(
-        newAccessToken,
-        process.env.JWT_ACCESS_SECRET as string
-      );
+    if (!refreshToken) {
+      return { success: false, message: "No refresh token found" };
     }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `refreshToken=${refreshToken}`, // ব্যাকএন্ডে রিফ্রেশ টোকেন পাঠানো বাধ্যতামূলক
+      },
+      credentials: "include",
+    });
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    return { success: false, error };
   }
-
-  let userRole: string | null = null;
-
-  if (!decodedAccessToken?.success) {
-    cookieStore.delete("accessToken");
-    cookieStore.delete("refreshToken");
-  }
-
-  if (decodedAccessToken?.success && decodedAccessToken.data) {
-    userRole = (decodedAccessToken.data as JwtPayload).role;
-  }
-
-  // Already Logged In -> Redirect based on role to Dashboard Routes
-  if (accessToken && AUTH_ROUTES.includes(pathname)) {
-    if (userRole === "Admin") {
-      return NextResponse.redirect(new URL("/dashboard/admin", request.url));
-    } else if (userRole === "Technician") {
-      return NextResponse.redirect(new URL("/dashboard/technician", request.url));
-    } else if (userRole === "Customer") {
-      return NextResponse.redirect(new URL("/dashboard/customer", request.url));
-    } else {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-  }
-
-  const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
-
-  const isAuthRoute = AUTH_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
-
-  // Login Required
-  if (!accessToken && !isPublicRoute && !isAuthRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  // Role Protection Checks for /dashboard Routes
-  const lowerPath = pathname.toLowerCase();
-
-  if (lowerPath.startsWith("/dashboard/admin") && userRole !== "Admin") {
-    return NextResponse.redirect(new URL("/not-found", request.url));
-  }
-
-  if (lowerPath.startsWith("/dashboard/technician") && userRole !== "Technician") {
-    return NextResponse.redirect(new URL("/not-found", request.url));
-  }
-
-  if (lowerPath.startsWith("/dashboard/customer") && userRole !== "Customer") {
-    return NextResponse.redirect(new URL("/not-found", request.url));
-  }
-
-  return NextResponse.next();
 }
-
-export const config = {
-  matcher: [
-    "/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)",
-  ],
-};
