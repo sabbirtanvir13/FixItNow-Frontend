@@ -19,12 +19,12 @@ interface TrustFeature {
 }
 
 const ROW_1_PARTNERS: PaymentPartner[] = [
-  { id: "sslcommerz", name: "SSLCommerz", logo: "/logo/sslcommerz.svg", category: "Gateway" },
+  { id: "sslcommerz", name: "SSLCommerz", logo: "/logo/sslcommerz.png", category: "Gateway" },
   { id: "bkash", name: "bKash", logo: "/logo/bkash.svg", category: "MFS" },
-  { id: "nagad", name: "Nagad", logo: "/logo/nagad.svg", category: "MFS" },
+  { id: "nagad", name: "Nagad", logo: "/logo/nagad-1.svg", category: "MFS" },
   { id: "rocket", name: "Rocket", logo: "/logo/rocket.svg", category: "MFS" },
   { id: "upay", name: "Upay", logo: "/logo/upay.svg", category: "MFS" },
-  { id: "visa", name: "Visa", logo: "/logo/visa.svg", category: "Card" },
+  { id: "visa", name: "Visa", logo: "/logo/visa-10.svg", category: "Card" },
   { id: "mastercard", name: "Mastercard", logo: "/logo/mastercard.svg", category: "Card" },
   { id: "amex", name: "American Express", logo: "/logo/amex.svg", category: "Card" },
 ];

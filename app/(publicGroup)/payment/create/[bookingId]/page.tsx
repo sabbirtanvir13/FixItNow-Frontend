@@ -9,17 +9,17 @@ import { createPayment } from "@/app/(publicGroup)/_action/paymentPageAction";
 export default function CreatePaymentPage() {
     const params = useParams();
     const bookingId = params.bookingId as string;
-    
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const handlePayment = async () => {
         setLoading(true);
         setError("");
-        
+
         try {
             const res = await createPayment(bookingId);
-            
+
             // ব্যাকএন্ড থেকে আসা পেমেন্ট গেটওয়ে ইউআরএলটি ক্যাচ করা (paymentUrl বা payment_url উভয়ই চেক করা হচ্ছে)
             const paymentGatewayUrl = res.data?.paymentUrl || res.data?.payment_url;
 
@@ -38,10 +38,10 @@ export default function CreatePaymentPage() {
     return (
         <div className="min-h-screen bg-slate-50/60 py-12 px-4 flex flex-col justify-center items-center">
             <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/80">
-                
+
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
-                    <Link 
-                        href="/service" 
+                    <Link
+                        href="/service"
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
                     >
                         <ArrowLeft className="size-4" />

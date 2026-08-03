@@ -443,7 +443,6 @@
 //     </header>
 //   );
 // } 
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -557,10 +556,13 @@ export function Navbar({ user }: NavbarProps) {
         ? "/dashboard/technician"
         : "/dashboard/customer";
 
+  // Fix: সঠিক ড্যাশবোর্ড প্রোফাইল রাউট সেট করা হলো
   const profileHref =
-    normalizedRole === "Customer"
-      ? "/dashboard/customer/profile"
-      : "/profile";
+    normalizedRole === "Admin"
+      ? "/dashboard/admin/profile"
+      : normalizedRole === "Technician"
+        ? "/dashboard/technician/profile"
+        : "/dashboard/customer/profile";
 
   const settingsHref =
     normalizedRole === "Admin"
