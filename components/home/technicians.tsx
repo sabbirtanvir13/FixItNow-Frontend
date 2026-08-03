@@ -97,7 +97,7 @@ export function TopRatedTechnicians() {
               Loading technicians...
             </div>
           ) : techniciansList.length > 0 ? (
-            techniciansList.parseTechs || techniciansList.map((tech: any) => {
+            techniciansList.map((tech: any) => {
               const name = tech.user?.name || tech.name || "Technician"
 
               // ইমেজ পাথ হ্যান্ডলিং
@@ -123,7 +123,7 @@ export function TopRatedTechnicians() {
 
               const reviewsCount = tech.total_reviews ?? tech.reviews?.length ?? 0
 
-              // ১. অভিজ্ঞতা: experience_years না থাকলে বায়ো থেকে বা ডিফল্ট মান
+              // ১. অভিজ্ঞতা: experience_years না থাকলে বায়ো থেকে বা ডিফল্ট মান
               let experienceText = "N/A"
               if (tech.experience_years) {
                 experienceText = `${tech.experience_years} Years`
