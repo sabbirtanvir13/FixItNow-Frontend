@@ -2,17 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
-  MapPin,
   Star,
-  Briefcase,
   BadgeCheck,
-  ArrowRight,
-  Sparkles
+  MapPin,
+  Check,
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 export interface Category {
   id?: string;
@@ -54,7 +53,6 @@ export interface Technician {
   user?: User;
   services?: Service[];
   reviews?: Review[];
-  // Legacy / fallback fields
   name?: string;
   profileImage?: string | null;
   experience?: number | null;
@@ -68,15 +66,33 @@ export interface TechnicianCardProps {
   technician: Technician;
 }
 
+function formatImageUrl(imagePath?: string | null): string {
+  const DEFAULT_IMAGE =
+    "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=800";
+
+  if (!imagePath) return DEFAULT_IMAGE;
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  let cleanedPath = imagePath.replace(/\\/g, "/");
+
+  if (cleanedPath.includes("/uploads/")) {
+    cleanedPath = "/uploads/" + cleanedPath.split("/uploads/")[1];
+  } else if (!cleanedPath.startsWith("/")) {
+    cleanedPath = `/${cleanedPath}`;
+  }
+
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  return `${backendUrl}${cleanedPath}`;
+}
+
 export default function TechnicianCard({ technician }: TechnicianCardProps) {
-  // Backend Mapping
   const techId = technician.id || (technician as any)._id || technician.userId || "";
   const name = technician.user?.name || technician.name || "Technician";
-  const image =
-    technician.profilePhoto ||
-    technician.profileImage ||
-    "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=800";
-  const experience = technician.experience_years ?? technician.experience;
+  const image = formatImageUrl(technician.profilePhoto || technician.profileImage);
+
   const price =
     technician.hourly_rate ??
     technician.services?.[0]?.price ??
@@ -98,136 +114,113 @@ export default function TechnicianCard({ technician }: TechnicianCardProps) {
   const rating =
     reviews.length > 0
       ? Number(
-          (
-            reviews.reduce((acc, curr) => acc + (curr.rating || 0), 0) /
-            reviews.length
-          ).toFixed(1)
-        )
+        (
+          reviews.reduce((acc, curr) => acc + (curr.rating || 0), 0) /
+          reviews.length
+        ).toFixed(1)
+      )
       : technician.rating ?? 0;
 
   return (
-    <Card className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-300 flex flex-col justify-between">
-      
-      {/* Top Banner Accent Line */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-500 group-hover:opacity-100 opacity-90 transition-opacity duration-300" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -4 }}
+      className="h-full w-full"
+    >
+      <Card className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:border-primary/40 flex flex-col justify-between h-full w-full">
 
-      <div>
-        {/* Profile Header Block */}
-        <div className="p-6 pb-3 flex items-start gap-4">
-          {/* Avatar Container */}
-          <Link
-            href={`/technicians/${techId}`}
-            className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border-2 border-slate-100 shadow-sm ring-2 ring-slate-100 group-hover:ring-indigo-500/30 group-hover:border-white transition-all duration-300 block"
-          >
-            <Image
-              src={image}
-              alt={name}
-              fill
-              className="object-cover transition duration-500 group-hover:scale-105"
-            />
-            {technician.isVerified && (
-              <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white ring-1 ring-emerald-500/30" />
-            )}
-          </Link>
+        {/* Top Image Banner Section */}
+        <div className="relative h-48 w-full overflow-hidden bg-muted m-0 p-0">
+          <Image
+            src={image}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-50" />
 
-          {/* User Meta Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <Link
-                href={`/technicians/${techId}`}
-                className="text-lg font-extrabold text-slate-900 truncate group-hover:text-indigo-600 transition-colors"
-              >
-                {name}
-              </Link>
-              {technician.isVerified && (
-                <BadgeCheck className="h-4.5 w-4.5 text-blue-600 flex-shrink-0" />
-              )}
-            </div>
+          {/* Category Badge */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-primary-foreground text-xs font-semibold shadow-sm">
+            <Briefcase className="h-3 w-3 text-primary" />
+            <span className="truncate max-w-[140px]">{categoryName}</span>
+          </div>
 
-            <p className="text-[11px] font-bold text-indigo-600 tracking-wider uppercase mt-0.5">
-              {categoryName}
-            </p>
-
-            {/* Rating & Review Pill */}
-            <div className="mt-2.5 flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-1 bg-amber-500/10 text-amber-700 px-2.5 py-0.5 rounded-full border border-amber-500/20 text-xs font-bold">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span>{rating > 0 ? rating : "New"}</span>
-                <span className="text-[10px] text-amber-600 font-normal">
-                  ({totalReviews})
-                </span>
-              </div>
-
-              {experience !== undefined && experience !== null && (
-                <div className="flex items-center gap-1 bg-slate-100/80 text-slate-700 px-2.5 py-0.5 rounded-full border border-slate-200/60 text-xs font-medium">
-                  <Briefcase className="h-3 w-3 text-slate-400" />
-                  <span>{experience} yrs exp</span>
-                </div>
-              )}
-            </div>
+          {/* Rating Badge */}
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white text-xs font-semibold shadow-sm">
+            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+            <span>{rating > 0 ? rating : "New"}</span>
+            <span className="text-gray-300 text-[10px]">({totalReviews})</span>
           </div>
         </div>
 
-        <CardContent className="px-6 pb-4 pt-1 space-y-3">
-          {/* Location */}
+        {/* Content Section */}
+        <div className="p-4 flex flex-col flex-grow space-y-2">
           {location && (
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <MapPin className="h-3.5 w-3.5 text-rose-500 flex-shrink-0" />
-              <span className="truncate font-medium">{location}</span>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span className="truncate">{location}</span>
             </div>
           )}
 
-          {/* Bio Preview */}
-          {bio && (
-            <p className="line-clamp-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-2xl border border-slate-100/80">
-              {bio}
-            </p>
-          )}
+          <div className="flex items-center gap-1.5">
+            <Link
+              href={`/technicians/${techId}`}
+              className="text-lg font-bold text-foreground hover:text-primary transition-colors line-clamp-1"
+            >
+              {name}
+            </Link>
+            {technician.isVerified && (
+              <BadgeCheck className="h-4 w-4 text-primary shrink-0" strokeWidth={2.5} />
+            )}
+          </div>
 
-          {/* Skills Badges */}
-          {skills.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {skills.slice(0, 3).map((skill, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="rounded-xl text-[11px] font-medium bg-slate-100/70 text-slate-700 border-slate-200/70 px-2.5 py-0.5 group-hover:bg-indigo-50 group-hover:text-indigo-700 group-hover:border-indigo-100 transition-colors"
+          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            {bio || `Experienced ${categoryName} ready to provide professional services with top-notch quality.`}
+          </p>
+
+          {skills && skills.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1 mt-auto">
+              {skills.slice(0, 3).map((skill, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-1 bg-muted/60 border border-border/50 px-2 py-0.5 rounded-md text-[11px] font-medium text-foreground"
                 >
-                  <Sparkles className="mr-1 h-3 w-3 text-indigo-400 inline" />
-                  {skill}
-                </Badge>
+                  <Check className="h-3 w-3 text-primary" />
+                  <span>{skill}</span>
+                </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </div>
-
-      {/* Footer & Action Button */}
-      <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3 rounded-b-3xl">
-        <div>
-          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold block">
-            {technician.hourly_rate
-              ? "Rate / Hour"
-              : price !== undefined && price !== null
-              ? "Starting Price"
-              : "Price"}
-          </span>
-          <h4 className="text-lg font-black text-slate-900">
-            {price !== undefined && price !== null ? `৳ ${price}` : "Negotiable"}
-          </h4>
         </div>
 
-        <Button
-          asChild
-          className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-indigo-500/25 px-5 py-2.5 text-xs font-semibold transition-all duration-200"
-        >
-          <Link href={`/technicians/${techId}`}>
-            View Details
-            <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </Button>
-      </div>
+        {/* Footer */}
+        <div className="border-t border-border/60 px-4 py-3.5 flex items-center justify-between bg-muted/20">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              {technician.hourly_rate ? "HOURLY RATE" : "STARTING PRICE"}
+            </span>
+            <span className="text-base font-extrabold text-foreground flex items-center">
+              {price !== undefined && price !== null ? `৳${price}` : "Negotiable"}
+              {price !== undefined && price !== null && technician.hourly_rate && (
+                <span className="text-xs font-normal text-muted-foreground ml-0.5">/hr</span>
+              )}
+            </span>
+          </div>
 
-    </Card>
+          <Button
+            asChild
+            size="sm"
+            className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 text-xs font-bold shadow-md shadow-primary/20 transition-all duration-300 cursor-pointer h-9"
+          >
+            <Link href={`/technicians/${techId}`}>
+              Details
+            </Link>
+          </Button>
+        </div>
+
+      </Card>
+    </motion.div>
   );
 }

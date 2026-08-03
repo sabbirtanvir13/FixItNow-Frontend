@@ -7,6 +7,7 @@ import SearchFilter from "../_component/SearchFilter";
 import TechnicianCard from "../_component/TechnicianCard";
 
 
+
 // export default async function TechniciansPage({
 //   searchParams,
 // }: {

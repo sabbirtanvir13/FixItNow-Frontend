@@ -2,57 +2,79 @@
 
 import { cookies } from "next/headers";
 
+// 🌟 Helper: Manage Base URL Safely
+const getBaseUrl = () => {
+  const url = process.env.BACKEND_API_URL;
+  if (!url) {
+    console.warn("⚠️ BACKEND_API_URL is missing in environment variables.");
+    return "http://localhost:5000"; // Fallback URL
+  }
+  return url;
+};
+
+// 🌟 Helper: Safely Handle API Responses
 const handleApiResponse = async (res: Response) => {
-  const contentType = res.headers.get("content-type");
+  try {
+    const contentType = res.headers.get("content-type");
 
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await res.text();
+    // Check if the response is JSON
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      console.error(`[API Error] Non-JSON response (${res.status}):`, text);
 
-    console.error("Non-JSON response:", text);
+      return {
+        success: false,
+        statusCode: res.status,
+        message: `Server Error (${res.status})`,
+        data: null,
+      };
+    }
 
+    // Safely parse JSON
+    return await res.json();
+  } catch (error) {
+    console.error("[API Error] Failed to parse JSON response:", error);
     return {
       success: false,
-      statusCode: res.status,
-      message: `Server Error (${res.status})`,
+      statusCode: res.status || 500,
+      message: "Invalid response format from server",
       data: null,
     };
   }
-
-  return res.json();
 };
 
+// 🌟 Helper: Get Auth Headers Safely
 const getAuthHeaders = async (): Promise<HeadersInit | null> => {
-  const cookieStore = await cookies();
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
-  const token = cookieStore.get("accessToken")?.value;
+    if (!token) return null;
 
-  if (!token) return null;
-
-  return {
-    Cookie: `accessToken=${token}`,
-  };
+    return {
+      Cookie: `accessToken=${token}`,
+    };
+  } catch (error) {
+    console.error("[Auth Error] Failed to access cookies:", error);
+    return null;
+  }
 };
 
 /* ============================
    Get All Technicians (Public)
 ============================ */
-
 export const getAllTechnicians = async () => {
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician`,
-      {
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician`, {
+      cache: "no-store",
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error("[Fetch Error] getAllTechnicians:", error);
     return {
       success: false,
-      message: "Failed to connect server",
+      message: "Failed to connect to the server",
       data: [],
     };
   }
@@ -61,23 +83,18 @@ export const getAllTechnicians = async () => {
 /* ============================
    Get Single Technician (Public)
 ============================ */
-
 export const getTechnicianById = async (id: string) => {
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/${id}`,
-      {
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician/${id}`, {
+      cache: "no-store",
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error(`[Fetch Error] getTechnicianById (${id}):`, error);
     return {
       success: false,
-      message: "Failed to connect server",
+      message: "Failed to connect to the server",
       data: null,
     };
   }
@@ -86,34 +103,29 @@ export const getTechnicianById = async (id: string) => {
 /* ============================
    Technician Profile (Private)
 ============================ */
-
 export const getTechnicianProfile = async () => {
   const headers = await getAuthHeaders();
 
   if (!headers) {
     return {
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized - No Access Token",
       data: null,
     };
   }
 
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/profile`,
-      {
-        headers,
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician/profile`, {
+      headers,
+      cache: "no-store",
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error("[Fetch Error] getTechnicianProfile:", error);
     return {
       success: false,
-      message: "Failed to connect server",
+      message: "Failed to connect to the server",
       data: null,
     };
   }
@@ -122,34 +134,29 @@ export const getTechnicianProfile = async () => {
 /* ============================
    Technician Bookings (Private)
 ============================ */
-
 export const getTechnicianBookings = async () => {
   const headers = await getAuthHeaders();
 
   if (!headers) {
     return {
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized - No Access Token",
       data: [],
     };
   }
 
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/bookings`,
-      {
-        headers,
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician/bookings`, {
+      headers,
+      cache: "no-store",
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error("[Fetch Error] getTechnicianBookings:", error);
     return {
       success: false,
-      message: "Failed to connect server",
+      message: "Failed to connect to the server",
       data: [],
     };
   }
@@ -158,34 +165,29 @@ export const getTechnicianBookings = async () => {
 /* ============================
    Update Technician Profile
 ============================ */
-
-export const updateTechnicianProfile = async (payload: any) => {
+export const updateTechnicianProfile = async (payload: Record<string, any>) => {
   const headers = await getAuthHeaders();
 
   if (!headers) {
     return {
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized - No Access Token",
     };
   }
 
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/profile`,
-      {
-        method: "PUT",
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician/profile`, {
+      method: "PUT",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error("[Fetch Error] updateTechnicianProfile:", error);
     return {
       success: false,
       message: "Failed to update profile",
@@ -196,34 +198,29 @@ export const updateTechnicianProfile = async (payload: any) => {
 /* ============================
    Update Availability
 ============================ */
-
-export const updateAvailability = async (payload: any) => {
+export const updateAvailability = async (payload: Record<string, any>) => {
   const headers = await getAuthHeaders();
 
   if (!headers) {
     return {
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized - No Access Token",
     };
   }
 
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/availability`,
-      {
-        method: "PUT",
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const res = await fetch(`${getBaseUrl()}/api/technician/availability`, {
+      method: "PUT",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error("[Fetch Error] updateAvailability:", error);
     return {
       success: false,
       message: "Failed to update availability",
@@ -234,23 +231,22 @@ export const updateAvailability = async (payload: any) => {
 /* ============================
    Update Booking Status
 ============================ */
-
 export const updateBookingStatus = async (
   bookingId: string,
-  payload: any
+  payload: Record<string, any>
 ) => {
   const headers = await getAuthHeaders();
 
   if (!headers) {
     return {
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized - No Access Token",
     };
   }
 
   try {
     const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/technician/bookings/${bookingId}`,
+      `${getBaseUrl()}/api/technician/bookings/${bookingId}`,
       {
         method: "PATCH",
         headers: {
@@ -263,11 +259,10 @@ export const updateBookingStatus = async (
 
     return await handleApiResponse(res);
   } catch (error) {
-    console.error(error);
-
+    console.error(`[Fetch Error] updateBookingStatus (${bookingId}):`, error);
     return {
       success: false,
-      message: "Failed to update booking",
+      message: "Failed to update booking status",
     };
   }
 };

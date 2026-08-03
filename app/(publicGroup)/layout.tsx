@@ -37,13 +37,18 @@ export default async function RootLayout({
     user = null;
   }
 
-   return (
+  return (
     // এখানে কোনো <html> বা <body> থাকবে না, শুধু আপনার দরকারী ডিভ বা ফ্র্যাগমেন্ট থাকবে
-   
-    <div className="w-full">
-         <Navbar user={user}></Navbar>
-      {children}
-      <Footer></Footer>
+
+    <div className="flex min-h-screen flex-col w-full z-10">
+      <Navbar user={user} />
+
+      <main className="flex-1 w-full pb-0 overflow-hidden">
+        {children}
+      </main>
+
+
+      <Footer />
     </div>
   )
 }

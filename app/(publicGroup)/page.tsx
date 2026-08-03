@@ -9,6 +9,7 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { LatestOffers } from "@/components/home/LatestOffers";
 import { StatsSection } from "@/components/home/Statistics";
 import { TopRatedTechnicians } from "@/components/home/technicians";
+import TrustedPartners from "@/components/home/TrustedPartners";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -21,6 +22,7 @@ export default function HomePage() {
 
       <Hero></Hero>
       <StatsSection></StatsSection>
+      <TrustedPartners></TrustedPartners>
       <PopularCategories></PopularCategories>
       <FeaturedServices></FeaturedServices>
       <TopRatedTechnicians></TopRatedTechnicians>
