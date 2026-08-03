@@ -19,18 +19,18 @@ export const registerUser = async (prevState: PostState | null, formData: FormDa
   const password = formData.get("password");
   const role = formData.get("role");
 
-  // ছবি থাকুক বা না থাকুক, আমরা সবসময় FormData (Multipart) হিসেবে পাঠাবো
+  // FormData তৈরি করা
   const multipart = new FormData();
-  multipart.append("name", name as string);
-  multipart.append("email", email as string);
-  multipart.append("password", password as string);
-  multipart.append("role", role as string);
+  if (name) multipart.append("name", name as string);
+  if (email) multipart.append("email", email as string);
+  if (password) multipart.append("password", password as string);
+  if (role) multipart.append("role", role as string);
 
   if (profileImageFile && profileImageFile.size > 0) {
     multipart.append("profileImage", profileImageFile);
   }
 
-  let headers: Record<string, string> = {
+  const headers: Record<string, string> = {
     cookie: `accessToken=${accessToken || ""}`,
   };
 
@@ -54,7 +54,7 @@ export const registerUser = async (prevState: PostState | null, formData: FormDa
     }
 
     if (result.success) {
-      // Next.js এর নিয়ম অনুযায়ী এখানে দুটি আর্গুমেন্ট পাস করা হলো
+
       revalidateTag("register", "default");
     }
 
