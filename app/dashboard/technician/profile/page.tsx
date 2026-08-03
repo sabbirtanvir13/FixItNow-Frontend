@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, Save, User } from "lucide-react";
+import { updateTechnicianProfile } from "@/app/(publicGroup)/_action/technicianAction";
+
 
 interface TechnicianProfilePageProps {
     initialData?: {
@@ -53,29 +55,9 @@ export default function TechnicianProfilePage({ initialData }: TechnicianProfile
                     : formData.skills,
             };
 
-            // এনভায়রনমেন্ট ভেরিয়েবল থেকে ব্যাকএন্ড ইউআরএল নেওয়া হচ্ছে
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+            const result = await updateTechnicianProfile(formattedData);
 
-            const response = await fetch(`${backendUrl}/api/technician/profile`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include", // কুকি পাঠানোর জন্য অত্যন্ত জরুরি
-                body: JSON.stringify(formattedData),
-            });
-
-            // ব্যাকএন্ড থেকে JSON রিটার্ন না করে HTML বা টেক্সট দিলে তা হ্যান্ডেল করার জন্য
-            const contentType = response.headers.get("content-type");
-            let result;
-            if (contentType && contentType.includes("application/json")) {
-                result = await response.json();
-            } else {
-                const textResult = await response.text();
-                throw new Error(textResult || "Server returned invalid response (404/500)");
-            }
-
-            if (!response.ok || !result.success) {
+            if (!result.success) {
                 throw new Error(result.message || "Failed to update profile");
             }
 

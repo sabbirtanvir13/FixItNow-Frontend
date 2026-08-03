@@ -7,7 +7,7 @@ const getBaseUrl = () => {
   const url = process.env.BACKEND_API_URL;
   if (!url) {
     console.warn("⚠️ BACKEND_API_URL is missing in environment variables.");
-    return "http://localhost:5000"; // Fallback URL
+    return "https://fixitnow-backend-one.vercel.app"; // Fallback URL
   }
   return url;
 };
@@ -165,6 +165,7 @@ export const getTechnicianBookings = async () => {
 /* ============================
    Update Technician Profile
 ============================ */
+
 export const updateTechnicianProfile = async (payload: Record<string, any>) => {
   const headers = await getAuthHeaders();
 
@@ -194,7 +195,6 @@ export const updateTechnicianProfile = async (payload: Record<string, any>) => {
     };
   }
 };
-
 /* ============================
    Update Availability
 ============================ */

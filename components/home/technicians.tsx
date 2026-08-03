@@ -1,41 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion, Variants } from "framer-motion"
 import { Star, Clock, DollarSign, ArrowRight, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getAllTechnicians } from "@/app/(publicGroup)/_action/technicianAction"
 
-export function TopRatedTechnicians() {
-  const [techniciansList, setTechniciansList] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+interface TopRatedTechniciansProps {
+  technicians: any[]
+}
 
-  useEffect(() => {
-    async function fetchTechs() {
-      try {
-        const response = await getAllTechnicians()
-        let techsData = []
-        if (response?.success) {
-          if (Array.isArray(response.data)) {
-            techsData = response.data
-          } else if (response.data) {
-            techsData = [response.data]
-          }
-        } else if (Array.isArray(response)) {
-          techsData = response
-        }
-
-        setTechniciansList(techsData.slice(0, 4))
-      } catch (error) {
-        console.error("Failed to fetch technicians:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTechs()
-  }, [])
+export function TopRatedTechnicians({ technicians: techniciansList }: TopRatedTechniciansProps) {
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },

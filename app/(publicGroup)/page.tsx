@@ -14,8 +14,25 @@ import TrustedPartners from "@/components/home/TrustedPartners";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { getAllTechnicians } from "@/app/(publicGroup)/_action/technicianAction";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch technicians server-side — the correct pattern in Next.js App Router
+  let technicians: any[] = [];
+  try {
+    const response = await getAllTechnicians();
+    if (response?.success) {
+      // Support response.data, response.technicians, response.results
+      const raw = response.data ?? response.technicians ?? response.results ?? [];
+      technicians = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    } else if (Array.isArray(response)) {
+      technicians = response;
+    }
+    technicians = technicians.slice(0, 4);
+  } catch {
+    technicians = [];
+  }
+
   return (
     <div>
 
@@ -26,7 +43,7 @@ export default function HomePage() {
       <TrustedPartners></TrustedPartners>
       <PopularCategories></PopularCategories>
       <FeaturedServices></FeaturedServices>
-      <TopRatedTechnicians></TopRatedTechnicians>
+      <TopRatedTechnicians technicians={technicians} />
       <HowItWorks></HowItWorks>
       <WhyChooseUs></WhyChooseUs>
       <CustomerReviews></CustomerReviews>
