@@ -1,13 +1,10 @@
-
-
 "use client"
 
-import { useActionState, useEffect, useRef, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
-import { Zap, Loader2, User, Camera, X } from "lucide-react"
+import { Zap, Loader2, User, Link as LinkIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,9 +17,6 @@ const ROLES: { value: Role; emoji: string; label: string }[] = [
   { value: "Customer", emoji: "👤", label: "Customer" },
   { value: "Technician", emoji: "🛠️", label: "Technician" },
 ]
-
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 // 5 MB
-const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -46,9 +40,7 @@ export function RegisterForm() {
   const [state, formAction] = useActionState<PostState | null, FormData>(registerUser, null)
 
   const [selectedRole, setSelectedRole] = useState<Role>("Customer")
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [imageUrl, setImageUrl] = useState<string>("")
 
   useEffect(() => {
     if (state) {
@@ -60,43 +52,6 @@ export function RegisterForm() {
       }
     }
   }, [state, router])
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error("Only JPG, JPEG, PNG, and WEBP images are allowed.")
-      e.target.value = ""
-      return
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      toast.error("Image must be smaller than 5 MB.")
-      e.target.value = ""
-      return
-    }
-
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
-  }
-
-  const handleRemoveImage = () => {
-    setImageFile(null)
-    setImagePreview(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
-  }
-
-  const wrappedAction = (formData: FormData) => {
-    formData.set("role", selectedRole)
-    if (imageFile) {
-      // ব্যাকএন্ডের upload.single("profileImage") এর সাথে মিলিয়ে এখানেও 'profileImage' দেওয়া হলো
-      formData.set("profileImage", imageFile)
-    }
-    return formAction(formData)
-  }
 
   return (
     <div className="w-full max-w-xl space-y-6 rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-10">
@@ -131,61 +86,48 @@ export function RegisterForm() {
         ))}
       </div>
 
-      <form action={wrappedAction} className="space-y-4">
+      <form action={formAction} className="space-y-4">
+        {/* Hidden Role Input */}
+        <input type="hidden" name="role" value={selectedRole} />
+
+        {/* Profile Image URL Input with Live Preview */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-foreground">
-            Profile Image{" "}
-            <span className="text-muted-foreground font-normal">(Optional)</span>
+          <Label htmlFor="profileImage" className="text-sm font-medium text-foreground">
+            Profile Image URL <span className="text-muted-foreground font-normal">(Optional)</span>
           </Label>
 
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 flex-shrink-0">
-              {imagePreview ? (
-                <>
-                  <Image
-                    src={imagePreview}
-                    alt="Profile preview"
-                    fill
-                    className="rounded-full object-cover border-2 border-primary/40"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center shadow-md hover:bg-destructive/80 transition"
-                    aria-label="Remove image"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </>
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 flex-shrink-0">
+              {imageUrl.trim() ? (
+                <img
+                  src={imageUrl}
+                  alt="Profile preview"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-primary/40"
+                  onError={(e) => {
+                    // ইমেজ লিংক ভাঙা বা ভুল হলে ডিফল্ট আইকন দেখাবে
+                    (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=User"
+                  }}
+                />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
-                  <User className="w-6 h-6 text-muted-foreground" />
+                <div className="w-12 h-12 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
+                  <User className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium text-foreground transition-colors"
-              >
-                <Camera className="w-4 h-4" />
-                {imagePreview ? "Change Image" : "Upload Image"}
-              </button>
-              <p className="text-[11px] text-muted-foreground">
-                JPG, PNG, WEBP · Max 5 MB
-              </p>
+            <div className="relative flex-1">
+              <Input
+                id="profileImage"
+                name="profileImage"
+                type="url"
+                placeholder="https://example.com/avatar.png"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="h-12 rounded-xl pl-9"
+              />
+              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             </div>
           </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            className="hidden"
-            onChange={handleImageChange}
-          />
         </div>
 
         <div className="space-y-2">
