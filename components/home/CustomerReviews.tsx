@@ -53,27 +53,23 @@ export function CustomerReviews() {
   }
 
   return (
-    <section className="relative w-full py-20 bg-muted/30 border-y border-border/60 overflow-hidden">
+    <section className="relative w-full py-20 bg-white overflow-hidden">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        
-        {/* ── Section Header ── */}
+
+        {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-16">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
-            <ShieldCheck className="size-4" />
-            Verified Feedback
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             What Our Customers Say
           </h2>
-          <p className="mt-3 text-base text-muted-foreground max-w-xl">
-            Read genuine experiences from homeowners and clients who trust our services.
+          <p className="mt-3 text-base text-slate-600 max-w-xl">
+            Trusted by thousands of people across the country.
           </p>
         </div>
 
-        {/* ── Carousel Card Container ── */}
+        {/* Carousel Card Container */}
         <div className="relative">
-          <div className="overflow-hidden rounded-3xl border border-border/80 bg-card p-8 sm:p-12 shadow-xl backdrop-blur-xl">
-            <Quote className="absolute top-6 right-8 size-16 text-primary/10 pointer-events-none" />
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 sm:p-12 shadow-xl">
+            <Quote className="absolute top-6 right-8 size-16 text-orange-500/10 pointer-events-none" />
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -104,16 +100,16 @@ export function CustomerReviews() {
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-base sm:text-lg italic leading-relaxed text-foreground/90">
+                  <p className="text-base sm:text-lg italic leading-relaxed text-slate-700">
                     &ldquo;{reviews[currentIndex].review}&rdquo;
                   </p>
 
                   {/* Name & Role */}
                   <div className="mt-6">
-                    <h3 className="text-base font-bold text-foreground">
+                    <h3 className="text-base font-bold text-slate-900">
                       {reviews[currentIndex].name}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {reviews[currentIndex].role}
                     </p>
                   </div>
@@ -122,7 +118,7 @@ export function CustomerReviews() {
             </AnimatePresence>
           </div>
 
-          {/* ── Carousel Navigation Controls ── */}
+          {/* Carousel Navigation Controls */}
           <div className="flex items-center justify-between mt-8">
             {/* Dots Indicator */}
             <div className="flex items-center gap-2">
@@ -131,7 +127,7 @@ export function CustomerReviews() {
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`h-2.5 rounded-full transition-all duration-300 ${
-                    currentIndex === index ? "w-8 bg-primary" : "w-2.5 bg-border hover:bg-muted-foreground/50"
+                    currentIndex === index ? "w-8 bg-orange-600" : "w-2.5 bg-slate-300 hover:bg-slate-400"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />

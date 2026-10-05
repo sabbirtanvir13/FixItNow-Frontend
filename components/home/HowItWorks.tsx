@@ -6,32 +6,32 @@ import { Search, UserCheck, CalendarCheck, CheckCircle2 } from "lucide-react"
 const steps = [
   {
     step: "01",
-    title: "Search Service",
-    description: "Find the exact home or tech service you need using our smart search bar.",
+    title: "Choose a Service",
+    description: "Find the exact service you need from our wide range of professional offerings.",
     icon: Search,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
   },
   {
     step: "02",
-    title: "Choose Technician",
-    description: "Browse verified expert profiles, read real customer reviews, and pick your favorite.",
+    title: "Pick a Technician",
+    description: "Browse verified expert profiles and choose the perfect professional for your job.",
     icon: UserCheck,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
   },
   {
     step: "03",
-    title: "Book Time Slot",
-    description: "Select a convenient date and time that fits perfectly into your schedule.",
+    title: "Book & Pay",
+    description: "Select your preferred time slot and complete secure payment in minutes.",
     icon: CalendarCheck,
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+    color: "text-orange-600",
+    bgColor: "bg-orange-500/10",
   },
   {
     step: "04",
-    title: "Get Job Done",
-    description: "Sit back and relax while our professional technician completes the work flawlessly.",
+    title: "Get It Done",
+    description: "Relax while our verified technician completes the job to your satisfaction.",
     icon: CheckCircle2,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
@@ -60,26 +60,23 @@ export function HowItWorks() {
   }
 
   return (
-    <section className="relative w-full py-20 bg-muted/30 border-y border-border/60 overflow-hidden">
+    <section id="how-it-works" className="relative w-full py-20 bg-white overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        {/* ── Section Header ── */}
+
+        {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-20">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
-            Simple & Easy Process
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             How It Works
           </h2>
-          <p className="mt-3 text-base text-muted-foreground max-w-xl">
-            Get your services done in just 4 simple steps without any hassle.
+          <p className="mt-3 text-base text-slate-600 max-w-xl">
+            Get your service done in just a few simple steps
           </p>
         </div>
 
-        {/* ── Line Timeline Layout ── */}
+        {/* Line Timeline Layout */}
         <div className="relative">
           {/* Connecting Horizontal Line for Desktop */}
-          <div className="hidden lg:block absolute top-10 left-20 right-20 h-0.5 bg-border/80 z-0" />
+          <div className="hidden lg:block absolute top-10 left-20 right-20 h-0.5 bg-slate-200 z-0" />
 
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10"
@@ -98,19 +95,19 @@ export function HowItWorks() {
                 >
                   {/* Step Icon Node with Badge */}
                   <div className="relative mb-6">
-                    <div className={`flex size-20 items-center justify-center rounded-2xl ${item.bgColor} ${item.color} shadow-md border border-border/60 transition-transform duration-300 group-hover:scale-110 group-hover:border-primary/50 bg-background`}>
+                    <div className={`flex size-20 items-center justify-center rounded-2xl ${item.bgColor} ${item.color} shadow-md border border-slate-200 transition-transform duration-300 group-hover:scale-110 group-hover:border-orange-500/50 bg-white`}>
                       <Icon className="size-8" />
                     </div>
-                    <span className="absolute -top-2 -right-2 flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-sm">
+                    <span className="absolute -top-2 -right-2 flex size-7 items-center justify-center rounded-full bg-orange-600 text-white text-xs font-bold shadow-sm">
                       {item.step}
                     </span>
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-orange-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-xs">
+                  <p className="text-sm text-slate-600 mt-2 leading-relaxed max-w-xs">
                     {item.description}
                   </p>
                 </motion.div>

@@ -39,9 +39,8 @@ const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Services", href: "/service", icon: LayoutDashboard },
   { label: "Technicians", href: "/technicians", icon: BarChart2 },
-  { label: "Categories", href: "/cetagory", icon: FolderKanban },
+  { label: "How It Works", href: "/#how-it-works", icon: Home },
   { label: "About", href: "/About", icon: FolderKanban },
-  { label: "Contact", href: "/Contact", icon: FolderKanban },
 ];
 
 export type ITechnicianProfile = {
@@ -192,21 +191,21 @@ export function Navbar({ user }: NavbarProps) {
   }, [isLogout, router]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-2xl shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur-xl shadow-sm transition-all duration-300">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-600 shadow-md transition-transform duration-300 group-hover:scale-105">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/20 transition-transform duration-300 group-hover:scale-105">
             <Zap className="size-5 text-white" strokeWidth={2.5} fill="currentColor" />
           </div>
-          <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+          <span className="font-bold text-xl tracking-tight text-slate-900">
             FixItNow
           </span>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-1.5" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
           {navLinks.map(({ label, href }) => {
             const currentHref = label === "Dashboard" ? dashboardHref : href;
             const isActive = pathname === currentHref;
@@ -218,8 +217,8 @@ export function Navbar({ user }: NavbarProps) {
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-300",
                   isActive
-                    ? "text-primary bg-primary/10 shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    ? "text-orange-600 bg-orange-50 shadow-sm"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
                 {label}
@@ -339,7 +338,7 @@ export function Navbar({ user }: NavbarProps) {
                 <Link href="/login">Sign In</Link>
               </Button>
               <Button
-                className="rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 px-6 bg-primary hover:bg-primary/90"
+                className="rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 px-6 bg-orange-600 hover:bg-orange-700"
                 asChild
               >
                 <Link href="/register">Sign Up</Link>
@@ -367,10 +366,10 @@ export function Navbar({ user }: NavbarProps) {
                 <div>
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex items-center gap-3 px-6 py-5 border-b border-border/50 bg-muted/20">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-600 shadow-sm">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-sm">
                       <Zap className="size-4 text-white" strokeWidth={2.5} />
                     </div>
-                    <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                    <span className="font-bold text-xl tracking-tight text-slate-900">
                       FixItNow
                     </span>
                   </div>
@@ -391,11 +390,11 @@ export function Navbar({ user }: NavbarProps) {
                           className={cn(
                             "flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                             isActive
-                              ? "bg-primary/10 text-primary font-semibold"
+                              ? "bg-orange-50 text-orange-600 font-semibold"
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           )}
                         >
-                          <Icon className={cn("size-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
+                          <Icon className={cn("size-4 shrink-0", isActive ? "text-orange-600" : "text-muted-foreground")} />
                           {label}
                         </Link>
                       );

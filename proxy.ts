@@ -24,3 +24,8 @@ export async function getNewAccessToken() {
     return { success: false, error };
   }
 }
+
+export async function proxy() {
+  // Placeholder proxy function for Next.js 16
+  return new Response(null, { status: 200 });
+}

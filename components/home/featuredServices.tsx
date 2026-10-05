@@ -48,25 +48,21 @@ export function FeaturedServices() {
   }
 
   return (
-    <section className="relative w-full py-20 bg-muted/30 border-y border-border/60">
+    <section className="relative w-full py-20 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        {/* ── Section Header ── */}
+
+        {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
-              <ShieldCheck className="size-4" />
-              Top Rated Offers
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Featured Services
             </h2>
-            <p className="mt-2 text-base text-muted-foreground max-w-xl">
-              Hand-picked professional services delivered by verified and top-rated experts near you.
+            <p className="mt-2 text-base text-slate-600 max-w-xl">
+              Top rated and most booked services by our customers
             </p>
           </div>
 
-          <Button variant="outline" asChild className="gap-2 w-fit">
+          <Button variant="outline" asChild className="gap-2 w-fit border-slate-300 text-slate-700 hover:bg-slate-50">
             <Link href="/service">
               View All Services
               <ArrowRight className="size-4" />
@@ -92,17 +88,17 @@ export function FeaturedServices() {
               <motion.div
                 key={service.id}
                 variants={itemVariants}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-orange-500/50 hover:shadow-lg hover:-translate-y-1"
               >
                 {/* Image Container */}
-                <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
                   <Image
                     src={service.image || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=600&auto=format&fit=crop"}
                     alt={service.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute top-3 left-3 z-10 rounded-full bg-background/90 backdrop-blur-md px-3 py-1 text-xs font-semibold text-foreground shadow-sm">
+                  <div className="absolute top-3 left-3 z-10 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm">
                     {service.category?.name || "Service"}
                   </div>
                 </div>
@@ -115,30 +111,30 @@ export function FeaturedServices() {
                       <div className="flex text-amber-500">
                         <Star className="size-4 fill-current" />
                       </div>
-                      <span className="text-xs font-bold text-foreground">
+                      <span className="text-xs font-bold text-slate-900">
                         {service.rating || "4.9"}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-slate-500">
                         {service.reviews || "(100+)"}
                       </span>
                     </div>
 
                     {/* Service Title */}
-                    <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="text-base font-semibold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2">
                       {service.title}
                     </h3>
                   </div>
 
                   {/* Footer: Price & Book Now */}
-                  <div className="mt-6 flex items-center justify-between border-t border-border/60 pt-4">
+                  <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4">
                     <div>
-                      <span className="text-xs text-muted-foreground block">Starting at</span>
-                      <span className="text-lg font-bold text-foreground">
+                      <span className="text-xs text-slate-500 block">Starting at</span>
+                      <span className="text-lg font-bold text-slate-900">
                         ৳{service.price}
                       </span>
                     </div>
 
-                    <Button size="sm" asChild className="gap-1.5 shadow-sm">
+                    <Button size="sm" asChild className="gap-1.5 shadow-sm bg-orange-600 hover:bg-orange-700">
                       <Link href={`/service/${service.id}`}>
                         Book Now
                       </Link>
