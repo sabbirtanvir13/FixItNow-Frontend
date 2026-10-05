@@ -10,7 +10,7 @@ const footerSections = [
       { label: "Home", href: "/" },
       { label: "Services", href: "/service" },
       { label: "Technicians", href: "/technicians" },
-      { label: "How It Works", href="/#how-it-works" },
+      { label: "How It Works", href: "/#how-it-works" },
       { label: "About", href: "/About" },
     ],
   },
