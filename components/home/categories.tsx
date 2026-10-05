@@ -273,7 +273,7 @@ export function PopularCategories() {
               return (
                 <motion.div key={category.id} variants={itemVariants}>
                   <Link
-                    href={`/services?category=${category.id}`}
+                    href={`/service?category=${category.id}`}
                     className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-orange-500/50 hover:shadow-md hover:-translate-y-1"
                   >
                     <div className="flex items-center justify-between mb-4">

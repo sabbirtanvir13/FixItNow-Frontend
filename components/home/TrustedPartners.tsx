@@ -19,25 +19,15 @@ interface TrustFeature {
 }
 
 const ROW_1_PARTNERS: PaymentPartner[] = [
-  { id: "sslcommerz", name: "SSLCommerz", logo: "/logo/sslcommerz.png", category: "Gateway" },
+  { id: "sslcommerz", name: "SSLCommerz", logo: "/logo/SSLCommerz.png", category: "Gateway" },
   { id: "bkash", name: "bKash", logo: "/logo/bkash.svg", category: "MFS" },
   { id: "nagad", name: "Nagad", logo: "/logo/nagad-1.svg", category: "MFS" },
-  { id: "rocket", name: "Rocket", logo: "/logo/rocket.svg", category: "MFS" },
-  { id: "upay", name: "Upay", logo: "/logo/upay.svg", category: "MFS" },
   { id: "visa", name: "Visa", logo: "/logo/visa-10.svg", category: "Card" },
   { id: "mastercard", name: "Mastercard", logo: "/logo/mastercard.svg", category: "Card" },
-  { id: "amex", name: "American Express", logo: "/logo/amex.svg", category: "Card" },
 ];
 
 const ROW_2_PARTNERS: PaymentPartner[] = [
   { id: "unionpay", name: "UnionPay", logo: "/logo/unionpay.svg", category: "Card" },
-  { id: "qcash", name: "Q-Cash", logo: "/logo/qcash.svg", category: "Card" },
-  { id: "dbbl-nexus", name: "DBBL Nexus", logo: "/logo/dbbl-nexus.svg", category: "Card" },
-  { id: "brac-bank", name: "BRAC Bank", logo: "/logo/brac-bank.svg", category: "Bank" },
-  { id: "city-bank", name: "City Bank", logo: "/logo/city-bank.svg", category: "Bank" },
-  { id: "dbbl", name: "Dutch-Bangla Bank", logo: "/logo/dbbl.svg", category: "Bank" },
-  { id: "ebl", name: "Eastern Bank", logo: "/logo/ebl.svg", category: "Bank" },
-  { id: "prime-bank", name: "Prime Bank", logo: "/logo/prime-bank.svg", category: "Bank" },
 ];
 
 const TRUST_FEATURES: TrustFeature[] = [
@@ -58,8 +48,8 @@ const TRUST_FEATURES: TrustFeature[] = [
   },
   {
     icon: <CreditCard className="w-5 h-5 text-purple-500" />,
-    title: "30+ Payment Methods",
-    description: "Support for MFS, local & international debit/credit cards",
+    title: "Multiple Payment Options",
+    description: "Support for mobile banking and credit/debit cards",
   },
 ];
 
@@ -94,8 +84,8 @@ const LogoCard: React.FC<{ partner: PaymentPartner }> = ({ partner }) => {
 
 export default function TrustedPartners() {
   // Duplicate arrays for smooth infinite marquee loops
-  const marqueeRow1 = [...ROW_1_PARTNERS, ...ROW_1_PARTNERS, ...ROW_1_PARTNERS];
-  const marqueeRow2 = [...ROW_2_PARTNERS, ...ROW_2_PARTNERS, ...ROW_2_PARTNERS];
+  const marqueeRow1 = [...ROW_1_PARTNERS, ...ROW_1_PARTNERS, ...ROW_1_PARTNERS, ...ROW_1_PARTNERS];
+  const marqueeRow2 = [...ROW_2_PARTNERS, ...ROW_2_PARTNERS, ...ROW_2_PARTNERS, ...ROW_2_PARTNERS];
 
   return (
     <section className="relative py-20 overflow-hidden bg-slate-50/50 dark:bg-slate-950/50 border-y border-slate-200/60 dark:border-slate-800/60">
@@ -137,7 +127,7 @@ export default function TrustedPartners() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="text-sm sm:text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
           >
-            Mobile Banking • Cards • Internet Banking
+            Mobile Banking • Credit & Debit Cards
           </motion.p>
 
           <motion.p
@@ -218,12 +208,12 @@ export default function TrustedPartners() {
             transform: translateX(0%);
           }
           100% {
-            transform: translateX(-33.333%);
+            transform: translateX(-25%);
           }
         }
         @keyframes marquee-reverse {
           0% {
-            transform: translateX(-33.333%);
+            transform: translateX(-25%);
           }
           100% {
             transform: translateX(0%);
