@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { getAllTechnicians } from "@/app/(publicGroup)/_action/technicianAction";
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
 
   let technicians: any[] = [];
@@ -33,9 +35,6 @@ export default async function HomePage() {
 
   return (
     <div>
-
-
-
       <Hero></Hero>
       <StatsSection></StatsSection>
       <TrustedPartners></TrustedPartners>
