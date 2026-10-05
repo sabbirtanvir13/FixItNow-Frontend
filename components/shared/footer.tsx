@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Zap, Facebook, Instagram, Linkedin } from "lucide-react"
+import { Zap, Share2, MessageCircle, Users } from "lucide-react"
 
 const footerSections = [
   {
@@ -33,9 +33,9 @@ const footerSections = [
 ]
 
 const socialLinks = [
-  { label: "Facebook", href: "#", icon: Facebook },
-  { label: "Instagram", href: "#", icon: Instagram },
-  { label: "LinkedIn", href: "#", icon: Linkedin },
+  { label: "Facebook", href: "#", icon: Share2 },
+  { label: "Instagram", href: "#", icon: MessageCircle },
+  { label: "LinkedIn", href: "#", icon: Users },
 ]
 
 export function Footer() {
