@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   Zap,
+  Search,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -199,9 +200,14 @@ export function Navbar({ user }: NavbarProps) {
           <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/20 transition-transform duration-300 group-hover:scale-105">
             <Zap className="size-5 text-white" strokeWidth={2.5} fill="currentColor" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-slate-900">
-            FixItNow
-          </span>
+          <div className="flex flex-col">
+            <span className="font-bold text-xl tracking-tight text-slate-900 leading-none">
+              FixItNow
+            </span>
+            <span className="text-[10px] text-slate-500 font-medium leading-tight">
+              Skilled People, Trusted Work.
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -229,6 +235,16 @@ export function Navbar({ user }: NavbarProps) {
 
         {/* Right Side User Profile / Auth */}
         <div className="flex items-center gap-4">
+          {/* Search Icon */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-9 rounded-full hover:bg-muted"
+            aria-label="Search"
+          >
+            <Search className="size-5" />
+          </Button>
+
           {profile ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -8,6 +8,8 @@ import { Hero } from "@/components/home/Hero";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { StatsSection } from "@/components/home/Statistics";
 import { TopRatedTechnicians } from "@/components/home/technicians";
+import { PopularServices } from "@/components/home/PopularServices";
+import { BusinessCTA } from "@/components/home/BusinessCTA";
 
 import TrustedPartners from "@/components/home/TrustedPartners";
 import { Button } from "@/components/ui/button";
@@ -36,6 +38,7 @@ export default async function HomePage() {
   return (
     <div>
       <Hero></Hero>
+      <PopularServices></PopularServices>
       <StatsSection></StatsSection>
       <TrustedPartners></TrustedPartners>
       <PopularCategories></PopularCategories>
@@ -44,6 +47,7 @@ export default async function HomePage() {
       <HowItWorks></HowItWorks>
       <CustomerReviews></CustomerReviews>
       <BecomeTechnicianSection></BecomeTechnicianSection>
+      <BusinessCTA></BusinessCTA>
       <FAQSection></FAQSection>
       <CTASection></CTASection>
     </div >

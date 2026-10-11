@@ -84,7 +84,7 @@ export function StatsSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-3 text-base text-slate-600"
           >
-            Thousands of customers trust FixItNow for their home and business service needs.
+            Thousands of customers trust FixItNow for their home and business service needs. Join the growing community today!
           </motion.p>
         </div>
 
