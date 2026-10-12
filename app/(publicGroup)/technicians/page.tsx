@@ -1,8 +1,13 @@
-
-
+import { Metadata } from "next";
 import { getAllTechnicians } from "../_action/technicianAction";
-import SearchFilter from "../_component/SearchFilter";
-import TechnicianCard from "../_component/TechnicianCard";
+import { getAllCategoriesData, getCurrentCustomerAction } from "../_action/serviceAction";
+import { TechniciansView } from "./TechniciansView";
+
+export const metadata: Metadata = {
+  title: "Find Trusted Technicians - Verified Home Service Experts | FixtNow",
+  description:
+    "Browse verified professionals, compare ratings, experience and pricing, then book the right expert for your home service across Bangladesh.",
+};
 
 export default async function TechniciansPage({
   searchParams,
@@ -14,160 +19,40 @@ export default async function TechniciansPage({
     rating?: string;
     experience?: string;
     sort?: string;
+    page?: string;
   }>;
 }) {
   const query = await searchParams;
 
-  const response = await getAllTechnicians();
+  // Convert query object into query string for backend API
+  const queryParams = new URLSearchParams();
+  if (query.search) queryParams.set("search", query.search);
+  if (query.category) queryParams.set("category", query.category);
+  if (query.location) queryParams.set("location", query.location);
+  if (query.rating) queryParams.set("rating", query.rating);
+  if (query.experience) queryParams.set("experience", query.experience);
+  if (query.sort) queryParams.set("sort", query.sort);
+  if (query.page) queryParams.set("page", query.page);
 
-  if (!response?.success) {
-    return (
-      <div className="container mx-auto py-24 text-center">
-        <h2 className="text-2xl font-bold">No Technicians Found</h2>
-        <p className="mt-3 text-gray-500">
-          Please try again later.
-        </p>
-      </div>
-    );
-  }
+  const queryString = queryParams.toString();
 
-  let technicians = response.data || [];
+  // Fetch real technicians, categories, and authenticated customer
+  const [techResponse, catResponse, userResponse] = await Promise.all([
+    getAllTechnicians(queryString),
+    getAllCategoriesData(),
+    getCurrentCustomerAction(),
+  ]);
 
-  // Search (works with technician.user.name & name)
-  if (query.search) {
-    const searchLower = query.search.toLowerCase();
-    technicians = technicians.filter((item: any) => {
-      const userName = item.user?.name?.toLowerCase() || "";
-      const techName = item.name?.toLowerCase() || "";
-      const profession = item.profession?.toLowerCase() || "";
-      const bio = item.bio?.toLowerCase() || "";
-      return (
-        userName.includes(searchLower) ||
-        techName.includes(searchLower) ||
-        profession.includes(searchLower) ||
-        bio.includes(searchLower)
-      );
-    });
-  }
-
-  // Category
-  if (query.category) {
-    const catLower = query.category.toLowerCase();
-    technicians = technicians.filter((item: any) => {
-      const matchServices = item.services?.some(
-        (s: any) =>
-          s.category?.name?.toLowerCase() === catLower ||
-          s.title?.toLowerCase().includes(catLower)
-      );
-      const matchProfession = item.profession?.toLowerCase() === catLower;
-      return matchServices || matchProfession;
-    });
-  }
-
-  // Location
-  if (query.location) {
-    const locLower = query.location.toLowerCase();
-    technicians = technicians.filter((item: any) =>
-      item.location?.toLowerCase().includes(locLower)
-    );
-  }
-
-  // Helper to calculate actual average rating from reviews
-  const getAvgRating = (item: any): number => {
-    if (item.reviews && item.reviews.length > 0) {
-      const sum = item.reviews.reduce((acc: number, r: any) => acc + (r.rating || 0), 0);
-      return sum / item.reviews.length;
-    }
-    return Number(item.rating || 0);
-  };
-
-  // Rating Filter (uses actual average rating from reviews)
-  if (query.rating) {
-    const minRating = Number(query.rating);
-    technicians = technicians.filter(
-      (item: any) => getAvgRating(item) >= minRating
-    );
-  }
-
-  // Experience Filter (uses experience_years)
-  if (query.experience) {
-    const minExp = Number(query.experience);
-    technicians = technicians.filter((item: any) => {
-      const exp = item.experience_years ?? item.experience ?? 0;
-      return Number(exp) >= minExp;
-    });
-  }
-
-  // Sort (uses hourly_rate or services[0].price or startingPrice)
-  if (query.sort) {
-    const getTechPrice = (item: any) =>
-      item.hourly_rate ?? item.services?.[0]?.price ?? item.startingPrice ?? 0;
-
-    if (query.sort === "price-low") {
-      technicians.sort((a: any, b: any) => getTechPrice(a) - getTechPrice(b));
-    } else if (query.sort === "price-high") {
-      technicians.sort((a: any, b: any) => getTechPrice(b) - getTechPrice(a));
-    } else if (query.sort === "rating") {
-      technicians.sort((a: any, b: any) => getAvgRating(b) - getAvgRating(a));
-    }
-  }
+  const technicians = techResponse?.success && Array.isArray(techResponse.data) ? techResponse.data : [];
+  const categories = catResponse?.success && Array.isArray(catResponse.data) ? catResponse.data : [];
+  const currentUser = userResponse?.authenticated ? userResponse.data : null;
 
   return (
-    <main className="min-h-screen bg-gray-50/50 pb-16">
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20 text-white">
-        <div className="container mx-auto px-5 text-center">
-          <h1 className="text-4xl font-bold">
-            Find Trusted Technicians
-          </h1>
-
-          <p className="mt-5 max-w-2xl mx-auto text-lg text-blue-100">
-            Browse verified professionals, compare ratings,
-            experience and pricing, then book the right expert
-            for your home service.
-          </p>
-        </div>
-      </section>
-
-      {/* Search */}
-      <section className="container mx-auto -mt-10 px-5">
-        <SearchFilter />
-      </section>
-
-      {/* Grid */}
-      <section className="container mx-auto py-16 px-5">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Available Technicians
-          </h2>
-
-          <span className="text-sm font-medium text-gray-500">
-            {technicians.length} Results Found
-          </span>
-        </div>
-
-        {technicians.length === 0 ? (
-          <div className="rounded-xl border bg-white py-16 text-center shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-800">
-              No Technician Found
-            </h3>
-
-            <p className="mt-2 text-gray-500">
-              Try changing or resetting your search filters.
-            </p>
-          </div>
-        ) : (
-          // এখানে lg:grid-cols-3 এর পরিবর্তে lg:grid-cols-4 করে দেওয়া হয়েছে যাতে বড় স্ক্রিনে ১ সারিতে ৪টি কার্ড দেখায়
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {technicians.map((technician: any) => (
-              <TechnicianCard
-                key={technician.id || technician._id}
-                technician={technician}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
+    <TechniciansView
+      initialTechnicians={technicians}
+      categories={categories}
+      initialUser={currentUser}
+      initialQuery={query}
+    />
   );
 }

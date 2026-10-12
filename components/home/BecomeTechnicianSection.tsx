@@ -1,130 +1,177 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { Wrench, ArrowRight, ShieldCheck, TrendingUp, Users, Clock, Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { motion } from "framer-motion"
+import { Wrench, ArrowRight, Clock, Calendar, ShieldCheck, TrendingUp } from "lucide-react"
 
 export function BecomeTechnicianSection() {
   return (
-    <section className="relative w-full py-20 bg-emerald-900 overflow-hidden">
-      {/* Background Decorative Glow */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <div className="absolute h-[500px] w-[500px] rounded-full bg-orange-500/10 blur-[150px]" />
-        <div className="absolute top-0 right-0 h-[400px] w-[400px] rounded-full bg-emerald-500/20 blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative w-full py-10 sm:py-14 bg-white overflow-visible">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center"
+          className="relative w-full rounded-2xl sm:rounded-3xl bg-[#0B281E] border border-emerald-950/40 shadow-2xl overflow-hidden md:overflow-visible min-h-[220px] md:h-[230px] lg:h-[235px] flex flex-col md:flex-row items-center justify-between"
         >
+          {/* Top-Left Organic Curved Cutout matching reference screenshot */}
+          <div className="absolute top-0 left-0 w-16 sm:w-24 lg:w-28 h-16 sm:h-24 lg:h-28 pointer-events-none z-20">
+            <svg
+              viewBox="0 0 100 100"
+              className="w-full h-full fill-white"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d="M 0,0 L 52,0 C 44,18 28,40 20,60 C 14,75 6,88 0,98 Z" />
+            </svg>
+          </div>
 
-          {/* Left Content */}
-          <div className="flex flex-col items-start text-left lg:col-span-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange-400 uppercase tracking-wider mb-3 bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20">
-              <Wrench className="size-4" />
-              BECOME A TECHNICIAN
+          {/* Photographic Background Texture & Atmospheric Green Gradient */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl sm:rounded-3xl z-0">
+            {/* Subtle workshop work environment overlay */}
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-15 mix-blend-overlay"
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80')",
+              }}
+            />
+            {/* Deep rich forest-green background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#071F17] via-[#0A291F] to-[#071E16] opacity-95" />
+
+            {/* Soft ambient center warmth */}
+            <div className="absolute left-[50%] top-1/2 -translate-y-1/2 -translate-x-1/2 w-[380px] h-[260px] bg-emerald-500/10 blur-[90px] rounded-full" />
+          </div>
+
+          {/* Decorative Organic Shapes behind Technician (Light Green Wave & Warm Orange) */}
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-2xl sm:rounded-3xl hidden md:block">
+            {/* Light Green Organic Wave Shape */}
+            <svg
+              className="absolute right-[215px] sm:right-[235px] lg:right-[260px] xl:right-[275px] top-[-10px] w-[140px] sm:w-[175px] lg:w-[205px] h-[210px] sm:h-[235px] lg:h-[250px] text-[#63C77D]"
+              viewBox="0 0 200 240"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M55,15 C115,-15 175,25 188,85 C200,145 165,205 115,228 C65,248 20,205 10,145 C0,85 -5,45 55,15 Z"
+                fill="currentColor"
+              />
+            </svg>
+
+            {/* Vibrant Orange Organic Accent Blob */}
+            <svg
+              className="absolute right-[225px] sm:right-[245px] lg:right-[270px] xl:right-[285px] bottom-[-22px] w-[105px] sm:w-[125px] lg:w-[145px] h-[105px] sm:h-[125px] lg:h-[145px] text-[#FF6B00]"
+              viewBox="0 0 150 150"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M35,45 C55,10 115,10 135,48 C155,88 125,138 85,142 C45,148 12,118 12,78 C12,58 15,80 35,45 Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+
+          {/* 1. LEFT CONTENT AREA (~42% Width on Desktop) */}
+          <div className="relative z-20 flex flex-col justify-center py-6 sm:py-7 pl-6 sm:pl-9 lg:pl-11 pr-4 max-w-full md:max-w-[46%] lg:max-w-[42%] text-left">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full bg-[#114935] border border-emerald-500/35 text-[10px] sm:text-[11px] font-bold text-emerald-300 tracking-wider mb-2.5 shadow-sm">
+              <Wrench className="size-3 text-emerald-400 shrink-0" />
+              <span>BECOME A TECHNICIAN</span>
             </div>
 
-            <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+            {/* Bold White Heading */}
+            <h2 className="text-xl sm:text-2xl lg:text-[27px] xl:text-[29px] font-extrabold text-white leading-[1.18] tracking-tight">
               Want to Grow Your<br />Business as a Professional?
             </h2>
 
-            <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-              Join FixItNow as a verified technician and get more jobs, more customers and more income.
+            {/* Description */}
+            <p className="mt-2 text-[11px] sm:text-xs lg:text-[13px] text-slate-300/90 leading-relaxed font-normal">
+              Join FixPro as a verified technician and get more jobs, more customers and more income.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <Button size="lg" asChild className="gap-2 h-12 px-8 text-base shadow-lg shadow-orange-600/20 bg-orange-600 hover:bg-orange-700">
-                <Link href="#">
-                  Register as Technician
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild className="gap-2 h-12 px-8 text-base border-slate-600 text-slate-300 hover:bg-slate-800">
-                <Link href="#">
-                  Learn More
-                </Link>
-              </Button>
+            {/* CTA Buttons */}
+            <div className="mt-4 sm:mt-4.5 flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-1.5 px-4.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#FF6B00] hover:bg-[#E65A00] text-white text-[11px] sm:text-xs lg:text-[13px] font-bold shadow-md shadow-orange-500/25 transition-all duration-200 hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <span>Register as Technician</span>
+                <ArrowRight className="size-3 sm:size-3.5" />
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="inline-flex items-center justify-center px-4.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/25 hover:border-white/40 text-white text-[11px] sm:text-xs lg:text-[13px] font-medium transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Learn More
+              </Link>
             </div>
           </div>
 
-          {/* Center - Technician Image */}
-          <div className="relative aspect-square lg:aspect-[4/5] max-w-lg mx-auto lg:col-span-1">
-            <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-emerald-800 shadow-2xl">
+          {/* 2. CENTER-RIGHT TECHNICIAN IMAGE (Overlapping top edge on Desktop) */}
+          <div className="relative md:absolute md:left-[39%] lg:left-[43%] xl:left-[45%] md:bottom-0 z-10 w-[240px] sm:w-[270px] lg:w-[310px] xl:w-[330px] h-[210px] sm:h-[240px] md:h-[265px] lg:h-[275px] shrink-0 pointer-events-none my-2 md:my-0">
+            <div className="relative w-full h-full">
               <Image
                 src="/hero-fix.png"
                 alt="Professional Technician"
                 fill
-                className="object-cover"
                 priority
+                sizes="(max-width: 768px) 240px, (max-width: 1024px) 280px, 330px"
+                className="object-contain object-bottom drop-shadow-[0_12px_22px_rgba(0,0,0,0.55)]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-transparent to-transparent" />
             </div>
           </div>
 
-          {/* Right - Benefits Card */}
-          <div className="lg:col-span-1">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl p-6 shadow-xl"
-            >
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Benefits</h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex size-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shrink-0 mt-0.5">
-                    <Clock className="size-3.5" />
+          {/* 3. RIGHT FLOATING BENEFITS CARD */}
+          <div className="relative z-20 my-4 md:my-0 mr-4 sm:mr-6 lg:mr-8 xl:mr-10 md:ml-auto w-[calc(100%-2rem)] sm:w-auto md:w-[210px] lg:w-[230px] xl:w-[245px] shrink-0">
+            <div className="bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-4 lg:p-4.5 shadow-xl shadow-black/25 border border-slate-100/90">
+              <div className="flex flex-col space-y-2.5 sm:space-y-3">
+                {/* 1. Flexible Working Hours */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-6 sm:size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shrink-0 border border-emerald-100/60">
+                    <Clock className="size-3.5 text-emerald-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900">Flexible Working Hours</h4>
-                    <p className="text-xs text-slate-500">Work on your own schedule</p>
-                  </div>
+                  <span className="text-[11px] sm:text-xs lg:text-[12.5px] font-semibold text-slate-800 tracking-tight leading-snug whitespace-nowrap">
+                    Flexible Working Hours
+                  </span>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="flex size-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 shrink-0 mt-0.5">
-                    <Calendar className="size-3.5" />
+                {/* 2. Flexible Schedule */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-6 sm:size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shrink-0 border border-emerald-100/60">
+                    <Calendar className="size-3.5 text-emerald-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900">Flexible Schedule</h4>
-                    <p className="text-xs text-slate-500">Choose when to work</p>
-                  </div>
+                  <span className="text-[11px] sm:text-xs lg:text-[12.5px] font-semibold text-slate-800 tracking-tight leading-snug whitespace-nowrap">
+                    Flexible Schedule
+                  </span>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="flex size-6 items-center justify-center rounded-full bg-amber-100 text-amber-600 shrink-0 mt-0.5">
-                    <ShieldCheck className="size-3.5" />
+                {/* 3. Secure Payments */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-6 sm:size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shrink-0 border border-emerald-100/60">
+                    <ShieldCheck className="size-3.5 text-emerald-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900">Secure Payments</h4>
-                    <p className="text-xs text-slate-500">Get paid on time</p>
-                  </div>
+                  <span className="text-[11px] sm:text-xs lg:text-[12.5px] font-semibold text-slate-800 tracking-tight leading-snug whitespace-nowrap">
+                    Secure Payments
+                  </span>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="flex size-6 items-center justify-center rounded-full bg-purple-100 text-purple-600 shrink-0 mt-0.5">
-                    <TrendingUp className="size-3.5" />
+                {/* 4. Grow Your Income */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-6 sm:size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shrink-0 border border-emerald-100/60">
+                    <TrendingUp className="size-3.5 text-emerald-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900">Grow Your Income</h4>
-                    <p className="text-xs text-slate-500">Earn more with us</p>
-                  </div>
+                  <span className="text-[11px] sm:text-xs lg:text-[12.5px] font-semibold text-slate-800 tracking-tight leading-snug whitespace-nowrap">
+                    Grow Your Income
+                  </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
-
         </motion.div>
       </div>
     </section>
   )
-}
+}

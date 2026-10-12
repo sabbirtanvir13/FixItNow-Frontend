@@ -61,9 +61,12 @@ const getAuthHeaders = async (): Promise<HeadersInit | null> => {
 };
 
 
-export const getAllTechnicians = async () => {
+export const getAllTechnicians = async (queryString?: string) => {
   try {
-    const res = await fetch(`${getBaseUrl()}/api/technician`, {
+    const url = queryString
+      ? `${getBaseUrl()}/api/technician?${queryString}`
+      : `${getBaseUrl()}/api/technician`;
+    const res = await fetch(url, {
       cache: "no-store",
     });
 
@@ -239,6 +242,43 @@ export const updateBookingStatus = async (
     return {
       success: false,
       message: "Failed to update booking status",
+    };
+  }
+};
+
+export const createBookingAction = async (payload: {
+  service_id: string;
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  notes?: string;
+}) => {
+  const headers = await getAuthHeaders();
+  if (!headers) {
+    return {
+      success: false,
+      requiresLogin: true,
+      message: "Please log in to book this technician",
+    };
+  }
+
+  try {
+    const res = await fetch(`${getBaseUrl()}/api/bookings`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await handleApiResponse(res);
+    return result;
+  } catch (error) {
+    console.error("[Fetch Error] createBookingAction:", error);
+    return {
+      success: false,
+      message: "Failed to create booking. Please try again.",
     };
   }
 };

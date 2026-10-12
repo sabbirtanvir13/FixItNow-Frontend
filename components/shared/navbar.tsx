@@ -35,12 +35,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { logout } from "../service/logout";
 import { toast } from "sonner";
+import { ThemePalettePicker } from "./ThemePalettePicker";
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Services", href: "/service", icon: LayoutDashboard },
   { label: "Technicians", href: "/technicians", icon: BarChart2 },
-  { label: "How It Works", href: "/#how-it-works", icon: Home },
+  { label: "How It Works", href: "/how-it-works", icon: Home },
   { label: "About", href: "/About", icon: FolderKanban },
 ];
 
@@ -192,39 +193,39 @@ export function Navbar({ user }: NavbarProps) {
   }, [isLogout, router]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur-xl shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#0B1729]/95 backdrop-blur-xl shadow-md transition-all duration-300">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/20 transition-transform duration-300 group-hover:scale-105">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF6B00] to-[#E05E00] shadow-lg shadow-orange-500/20 transition-transform duration-300 group-hover:scale-105">
             <Zap className="size-5 text-white" strokeWidth={2.5} fill="currentColor" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xl tracking-tight text-slate-900 leading-none">
-              FixItNow
+            <span className="font-bold text-xl tracking-tight text-white leading-none">
+              FixtNow
             </span>
-            <span className="text-[10px] text-slate-500 font-medium leading-tight">
+            <span className="text-[10px] text-slate-400 font-medium leading-tight mt-0.5">
               Skilled People, Trusted Work.
             </span>
           </div>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-1.5" aria-label="Main navigation">
           {navLinks.map(({ label, href }) => {
             const currentHref = label === "Dashboard" ? dashboardHref : href;
-            const isActive = pathname === currentHref;
+            const isActive = pathname === currentHref || (href === "/technicians" && pathname.startsWith("/technicians"));
 
             return (
               <Link
                 key={label}
                 href={currentHref}
                 className={cn(
-                  "relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-300",
+                  "relative px-4 py-2 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "text-orange-600 bg-orange-50 shadow-sm"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "text-[#FF6B00] font-semibold after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-6 after:h-0.5 after:bg-[#FF6B00] after:rounded-full"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-lg"
                 )}
               >
                 {label}
@@ -234,16 +235,36 @@ export function Navbar({ user }: NavbarProps) {
         </nav>
 
         {/* Right Side User Profile / Auth */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Theme Palette Picker (4 curated color themes) */}
+          <ThemePalettePicker />
+
           {/* Search Icon */}
           <Button
             variant="ghost"
             size="icon"
-            className="size-9 rounded-full hover:bg-muted"
+            className="size-9 rounded-full text-slate-300 hover:text-white hover:bg-slate-800/60"
             aria-label="Search"
+            asChild
           >
-            <Search className="size-5" />
+            <Link href="/service">
+              <Search className="size-5" />
+            </Link>
           </Button>
+
+          {/* Notification Bell */}
+          <button
+            type="button"
+            className="relative size-9 rounded-full text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-center transition-colors"
+            aria-label="Notifications"
+          >
+            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span className="absolute top-1 right-1 size-4 bg-[#FF6B00] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-sm">
+              2
+            </span>
+          </button>
 
           {profile ? (
             <DropdownMenu>
@@ -348,13 +369,13 @@ export function Navbar({ user }: NavbarProps) {
             <div className="hidden sm:flex items-center gap-3">
               <Button
                 variant="ghost"
-                className="rounded-full font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-6"
+                className="rounded-full font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 px-5"
                 asChild
               >
                 <Link href="/login">Sign In</Link>
               </Button>
               <Button
-                className="rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 px-6 bg-orange-600 hover:bg-orange-700"
+                className="rounded-full font-medium shadow-md hover:shadow-lg transition-all duration-300 px-5 bg-[#FF6B00] hover:bg-[#E05E00] text-white shadow-orange-500/20"
                 asChild
               >
                 <Link href="/register">Sign Up</Link>
@@ -369,34 +390,46 @@ export function Navbar({ user }: NavbarProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="size-10 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+                  className="size-10 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
-                  <Menu className="size-5 text-foreground" />
+                  <Menu className="size-5" />
                 </Button>
               </SheetTrigger>
 
               <SheetContent
                 side="right"
-                className="w-[85vw] sm:w-80 p-0 flex flex-col justify-between border-l-0 shadow-2xl"
+                className="w-[85vw] sm:w-80 p-0 flex flex-col justify-between border-slate-800 bg-[#0B1729] text-white shadow-2xl"
               >
                 <div>
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  <div className="flex items-center gap-3 px-6 py-5 border-b border-border/50 bg-muted/20">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-sm">
+                  <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-800 bg-slate-900/60">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF6B00] to-[#E05E00] shadow-sm">
                       <Zap className="size-4 text-white" strokeWidth={2.5} />
                     </div>
-                    <span className="font-bold text-xl tracking-tight text-slate-900">
-                      FixItNow
+                    <div className="flex flex-col">
+                      <span className="font-bold text-lg tracking-tight text-white leading-none">
+                        FixtNow
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium leading-tight mt-0.5">
+                        Skilled People, Trusted Work.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Color Palette
                     </span>
+                    <ThemePalettePicker />
                   </div>
 
                   <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
-                    <p className="px-3 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                    <p className="px-3 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
                       Menu
                     </p>
                     {navLinks.map(({ label, href, icon: Icon }) => {
                       const currentHref = label === "Dashboard" ? dashboardHref : href;
-                      const isActive = pathname === currentHref;
+                      const isActive = pathname === currentHref || (href === "/technicians" && pathname.startsWith("/technicians"));
 
                       return (
                         <Link
@@ -406,11 +439,11 @@ export function Navbar({ user }: NavbarProps) {
                           className={cn(
                             "flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                             isActive
-                              ? "bg-orange-50 text-orange-600 font-semibold"
-                              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                              ? "bg-[#FF6B00]/15 text-[#FF6B00] font-semibold"
+                              : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
                           )}
                         >
-                          <Icon className={cn("size-4 shrink-0", isActive ? "text-orange-600" : "text-muted-foreground")} />
+                          <Icon className={cn("size-4 shrink-0", isActive ? "text-[#FF6B00]" : "text-slate-400")} />
                           {label}
                         </Link>
                       );
@@ -419,25 +452,25 @@ export function Navbar({ user }: NavbarProps) {
                 </div>
 
                 {/* Mobile Bottom Profile Section */}
-                <div className="p-4 border-t border-border/50 bg-muted/20">
+                <div className="p-4 border-t border-slate-800 bg-slate-900/60">
                   {profile ? (
-                    <div className="flex items-center justify-between gap-3 bg-background p-3 rounded-xl border border-border/50 shadow-sm">
+                    <div className="flex items-center justify-between gap-3 bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 shadow-sm">
                       <div className="flex items-center gap-3 min-w-0">
-                        <Avatar className="size-10 shrink-0 shadow-sm border border-border/50">
+                        <Avatar className="size-10 shrink-0 shadow-sm border border-slate-700">
                           <AvatarImage
                             src={getProfileImage()}
                             alt={profile.name || "User"}
                             className="object-cover"
                           />
-                          <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                          <AvatarFallback className="bg-[#FF6B00] text-white font-semibold">
                             {userInitials}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col min-w-0">
-                          <span className="truncate text-sm font-bold text-foreground leading-tight">
+                          <span className="truncate text-sm font-bold text-white leading-tight">
                             {profile.name}
                           </span>
-                          <span className="truncate text-xs text-muted-foreground leading-tight mt-0.5">
+                          <span className="truncate text-xs text-slate-400 leading-tight mt-0.5">
                             {profile.email}
                           </span>
                         </div>
@@ -449,7 +482,7 @@ export function Navbar({ user }: NavbarProps) {
                           setMobileOpen(false);
                           handleUserMenuAction("logout");
                         }}
-                        className="size-9 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                        className="size-9 shrink-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg"
                         aria-label="Log out"
                       >
                         <LogOut className="size-4" />
@@ -457,13 +490,13 @@ export function Navbar({ user }: NavbarProps) {
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2.5">
-                      <Button variant="outline" className="w-full rounded-xl font-medium" asChild>
+                      <Button variant="outline" className="w-full rounded-xl font-medium border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white" asChild>
                         <Link href="/login" onClick={() => setMobileOpen(false)}>
                           Sign In
                         </Link>
                       </Button>
-                      <Button className="w-full rounded-xl font-medium shadow-sm" asChild>
-                        <Link href="/signup" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full rounded-xl font-medium shadow-sm bg-[#FF6B00] hover:bg-[#E05E00] text-white" asChild>
+                        <Link href="/register" onClick={() => setMobileOpen(false)}>
                           Sign Up
                         </Link>
                       </Button>
