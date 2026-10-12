@@ -33,7 +33,12 @@ export default async function RootLayout({
 }>) {
 
 
-  const user = await GetMe()
+  let user = null;
+  try {
+    user = await GetMe();
+  } catch {
+    user = null;
+  }
 
 
   return (

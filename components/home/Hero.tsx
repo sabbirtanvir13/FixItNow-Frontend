@@ -2,17 +2,13 @@
 
 import { motion, type Variants } from 'framer-motion'
 import {
-  ArrowRight,
   ShieldCheck,
   Star,
   Search,
   MapPin,
-  Clock,
   Zap,
   Wrench,
-  CheckCircle2,
-  Sparkles,
-  Users,
+  ChevronDown,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -23,59 +19,39 @@ const containerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
     },
   },
 }
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
+      duration: 0.5,
       ease: [0.16, 1, 0.3, 1],
     },
   },
 }
 
-const floatVariant1: Variants = {
-  float: {
-    y: [0, -8, 0],
-    transition: {
-      duration: 4.5,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    },
-  },
-}
-
-const floatVariant2: Variants = {
-  float: {
-    y: [0, 8, 0],
-    transition: {
-      duration: 5.5,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    },
-  },
-}
-
-const POPULAR_TAGS = [
-  { label: 'AC Servicing', query: 'ac' },
-  { label: 'Electrical', query: 'electrical' },
-  { label: 'Plumbing', query: 'plumbing' },
-  { label: 'Appliance Repair', query: 'appliance' },
-  { label: 'Deep Cleaning', query: 'cleaning' },
+const POPULAR_SERVICES = [
+  'AC Servicing',
+  'Electrical Repair',
+  'Plumbing',
+  'Appliance Repair',
+  'Deep Cleaning',
+  'Painting',
+  'Carpentry',
 ]
 
 export function Hero() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'service' | 'technician'>('service')
   const [service, setService] = useState('')
   const [location, setLocation] = useState('')
+  const [serviceDropdownOpen, setServiceDropdownOpen] = useState(false)
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
@@ -85,312 +61,249 @@ export function Hero() {
     if (location.trim()) params.set('location', location.trim())
 
     const queryString = params.toString()
-    const targetPath = activeTab === 'service' ? '/service' : '/technicians'
-
-    router.push(queryString ? `${targetPath}?${queryString}` : targetPath)
-  }
-
-  const handleTagClick = (tagQuery: string) => {
-    setService(tagQuery)
-    router.push(`/service?search=${encodeURIComponent(tagQuery)}`)
+    router.push(queryString ? `/service?${queryString}` : '/service')
   }
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50/70 via-white to-white pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-100">
-      {/* Refined Geometric Backdrop */}
+    <section className="relative overflow-hidden bg-[#FAF9F6] pt-10 pb-12 sm:pt-14 sm:pb-16 lg:py-16 min-h-[640px] lg:h-[690px] xl:h-[710px] flex items-center border-b border-slate-100/80">
+      {/* Background Decor: Warm cream/pale-orange gradients & faint dotted grid */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Subtle dot-grid texture */}
-        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 [mask-image:radial-gradient(ellipse_at_top,white_40%,transparent_80%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
 
-        {/* Ambient warm lighting glows */}
-        <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-orange-400/10 rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 -left-32 w-[400px] h-[400px] bg-amber-300/10 rounded-full blur-[100px]" />
+        {/* Soft atmospheric warm glows */}
+        <div className="absolute -top-24 right-1/4 w-[480px] h-[480px] bg-orange-200/25 rounded-full blur-[110px]" />
+        <div className="absolute top-1/3 -left-20 w-[420px] h-[420px] bg-amber-100/40 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* Left Column: Value Proposition & Interactive Search (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col space-y-7">
-            {/* Top Pill / Platform Badge */}
+          {/* ================= LEFT COLUMN: Headline, Compact Search & Trust Indicators (~55% width) ================= */}
+          <div className="lg:col-span-7 flex flex-col space-y-5 lg:space-y-6">
+            {/* Trust Badge Pill */}
             <motion.div variants={itemVariants}>
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 shadow-xs">
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50/90 border border-orange-200/80 shadow-xs">
+                <ShieldCheck className="size-3.5 text-[#FF6B00]" />
+                <span className="text-xs font-semibold text-[#FF6B00] tracking-wide">
+                  Verified • Trusted • Professional
                 </span>
-                <span className="text-xs font-semibold tracking-wide text-orange-950">
-                  Dhaka's #1 Trusted Home Service Network
-                </span>
-                <span className="hidden sm:inline-block text-xs font-medium text-orange-700/80">
+                <span className="hidden sm:inline text-xs font-medium text-orange-600/75">
                   • 2,500+ Verified Pros
                 </span>
               </div>
             </motion.div>
 
             {/* Main Headline */}
-            <motion.div variants={itemVariants} className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
-                Expert Home Repairs,{' '}
-                <span className="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 bg-clip-text text-transparent">
-                  Delivered On Demand.
-                </span>
+            <motion.div variants={itemVariants} className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-black tracking-tight text-[#0B1729] leading-[1.12]">
+                Find expert services &<br />
+                <span className="text-[#FF6B00]">verified technicians</span><br />
+                instantly
               </h1>
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl font-normal">
-                Connect with verified electricians, plumbers, and appliance specialists in minutes.
-                Transparent upfront pricing, 30-day service warranty, and guaranteed satisfaction.
+              <p className="text-xs sm:text-sm lg:text-[14.5px] text-slate-600 leading-relaxed max-w-lg font-normal">
+                From home repairs to appliance maintenance, get professional help from
+                background-checked, skilled technicians — fast, safe and hassle-free.
               </p>
             </motion.div>
 
-            {/* Modern Search Console */}
-            <motion.div variants={itemVariants} className="w-full max-w-2xl">
-              <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl shadow-slate-200/50 p-2 sm:p-2.5 transition-all">
-                {/* Search Type Selector Tabs */}
-                <div className="flex items-center gap-1 p-1 bg-slate-100/80 rounded-xl mb-2 sm:mb-2.5 w-fit">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('service')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      activeTab === 'service'
-                        ? 'bg-white text-orange-600 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    Find Services
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('technician')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      activeTab === 'technician'
-                        ? 'bg-white text-orange-600 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    Find Technicians
-                  </button>
+            {/* Compact Horizontal Search Console */}
+            <motion.div variants={itemVariants} className="w-full max-w-[580px]">
+              <form
+                onSubmit={handleSearch}
+                className="bg-white rounded-2xl sm:rounded-full border border-slate-200 shadow-lg shadow-slate-200/50 p-2 sm:p-2 sm:pl-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 transition-all relative"
+              >
+                {/* 1. Location Input */}
+                <div className="flex items-center gap-2 flex-1 px-2 py-1">
+                  <MapPin className="size-4 text-[#FF6B00] shrink-0" />
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Enter your location (e.g. Dhaka)"
+                    className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 font-medium bg-transparent border-none focus:outline-none"
+                  />
                 </div>
 
-                {/* Form Fields */}
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch gap-2">
-                  {/* Service Query Input */}
-                  <div className="relative flex-1 group">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-600 transition-colors">
-                      <Search className="w-4 h-4" />
-                    </div>
-                    <input
-                      type="text"
-                      value={service}
-                      onChange={(e) => setService(e.target.value)}
-                      placeholder={
-                        activeTab === 'service'
-                          ? 'What needs fixing? (e.g. AC repair, plumbing)'
-                          : 'Technician title (e.g. Electrician, Carpenter)'
-                      }
-                      className="w-full pl-10 pr-3 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium"
-                    />
-                  </div>
+                {/* Vertical Divider */}
+                <div className="hidden sm:block h-7 w-px bg-slate-200 shrink-0" />
 
-                  {/* Location Input */}
-                  <div className="relative sm:w-48 group">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-600 transition-colors">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Location (e.g. Dhaka)"
-                      className="w-full pl-10 pr-3 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium"
-                    />
-                  </div>
-
-                  {/* Search CTA */}
-                  <button
-                    type="submit"
-                    className="py-3 px-6 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-bold text-sm rounded-xl shadow-md shadow-orange-600/25 hover:shadow-orange-600/35 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shrink-0 active:scale-[0.98]"
+                {/* 2. Service Selector */}
+                <div className="relative flex items-center gap-2 flex-1 px-2 py-1">
+                  <Wrench className="size-4 text-slate-400 shrink-0" />
+                  <div
+                    onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
+                    className="flex items-center justify-between w-full cursor-pointer select-none"
                   >
-                    <span>Search</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </form>
+                    <span className={`text-xs sm:text-sm font-medium truncate ${service ? 'text-slate-900' : 'text-slate-400'}`}>
+                      {service || 'Select service'}
+                    </span>
+                    <ChevronDown className={`size-3.5 text-slate-400 transition-transform ${serviceDropdownOpen ? 'rotate-180' : ''}`} />
+                  </div>
 
-                {/* Popular Quick Suggestions */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-2.5 px-1">
-                  <span className="text-xs font-medium text-slate-500 flex items-center gap-1 mr-1">
-                    <Sparkles className="w-3 h-3 text-orange-500" />
-                    Popular:
-                  </span>
-                  {POPULAR_TAGS.map((tag) => (
-                    <button
-                      key={tag.query}
-                      type="button"
-                      onClick={() => handleTagClick(tag.query)}
-                      className="text-xs font-medium text-slate-600 hover:text-orange-600 bg-slate-100/80 hover:bg-orange-50 px-2.5 py-1 rounded-md transition-colors border border-transparent hover:border-orange-200/60 cursor-pointer"
-                    >
-                      {tag.label}
-                    </button>
-                  ))}
+                  {/* Dropdown Menu */}
+                  {serviceDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-2 w-56 bg-white rounded-xl border border-slate-200 shadow-xl py-1.5 z-50">
+                      <div
+                        onClick={() => {
+                          setService('')
+                          setServiceDropdownOpen(false)
+                        }}
+                        className="px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer"
+                      >
+                        All Services
+                      </div>
+                      {POPULAR_SERVICES.map((srv) => (
+                        <div
+                          key={srv}
+                          onClick={() => {
+                            setService(srv)
+                            setServiceDropdownOpen(false)
+                          }}
+                          className={`px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors ${
+                            service === srv
+                              ? 'bg-orange-50 text-[#FF6B00] font-bold'
+                              : 'text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          {srv}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+
+                {/* 3. Orange Search Button */}
+                <button
+                  type="submit"
+                  className="h-10 sm:h-11 px-6 rounded-xl sm:rounded-full bg-[#FF6B00] hover:bg-[#E65A00] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-all duration-200 hover:shadow-orange-500/35 hover:scale-[1.02] active:scale-[0.98] shrink-0 cursor-pointer"
+                >
+                  <Search className="size-3.5 sm:size-4" />
+                  <span>Search</span>
+                </button>
+              </form>
             </motion.div>
 
-            {/* Social Proof & Guarantees */}
+            {/* Compact Trust Indicators Row Below Search */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-2"
+              className="flex flex-wrap items-center gap-5 sm:gap-7 pt-1"
             >
-              {/* Reviewers Stack */}
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2 overflow-hidden">
-                  <Image
-                    className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover shadow-xs"
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                    alt="Customer"
-                    width={36}
-                    height={36}
-                  />
-                  <Image
-                    className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover shadow-xs"
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
-                    alt="Customer"
-                    width={36}
-                    height={36}
-                  />
-                  <Image
-                    className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover shadow-xs"
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80"
-                    alt="Customer"
-                    width={36}
-                    height={36}
-                  />
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white bg-orange-600 text-[11px] font-bold text-white shadow-xs">
-                    +15k
-                  </div>
+              {/* 1. Verified Technicians */}
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-8 items-center justify-center rounded-full bg-orange-50 border border-orange-200/60 text-[#FF6B00] shrink-0 shadow-2xs">
+                  <ShieldCheck className="size-4" />
                 </div>
-
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    ))}
-                    <span className="text-xs font-bold text-slate-800 ml-1">4.9 / 5</span>
-                  </div>
-                  <span className="text-xs text-slate-500 font-medium">
-                    from 12,000+ verified customer reviews
+                  <span className="text-xs font-bold text-slate-900 leading-tight">
+                    Verified Technicians
+                  </span>
+                  <span className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                    Background checked
                   </span>
                 </div>
               </div>
 
-              {/* Dividers & Fast Guarantees */}
-              <div className="hidden sm:block h-8 w-px bg-slate-200" />
-
-              <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Police Verified</span>
+              {/* 2. Fast & Reliable */}
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-8 items-center justify-center rounded-full bg-orange-50 border border-orange-200/60 text-[#FF6B00] shrink-0 shadow-2xs">
+                  <Zap className="size-4" />
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-orange-600" />
-                  <span>30-Min Arrival</span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-slate-900 leading-tight">
+                    Fast & Reliable
+                  </span>
+                  <span className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                    Book in minutes
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. Trusted by 50K+ */}
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-8 items-center justify-center rounded-full bg-orange-50 border border-orange-200/60 text-[#FF6B00] shrink-0 shadow-2xs">
+                  <Star className="size-4 fill-orange-500/20" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-slate-900 leading-tight">
+                    Trusted by 50K+
+                  </span>
+                  <span className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                    Happy customers
+                  </span>
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Right Column: Premium Visual Showcase (5 cols) */}
+          {/* ================= RIGHT COLUMN: Floating Technician with Organic Shapes (~45% width) ================= */}
           <motion.div
-            className="lg:col-span-5 relative flex justify-center lg:justify-end"
+            className="lg:col-span-5 relative flex items-center justify-center lg:justify-end"
             variants={itemVariants}
           >
-            <div className="relative w-full max-w-[440px]">
-              {/* Ambient Glow */}
-              <div className="absolute -inset-1.5 bg-gradient-to-tr from-orange-500/20 via-amber-500/10 to-transparent rounded-[32px] blur-xl opacity-70" />
+            <div className="relative w-full max-w-[460px] h-[380px] sm:h-[440px] lg:h-[500px] flex items-center justify-center">
+              {/* Soft interior bokeh image in background */}
+              <div
+                className="absolute inset-2 sm:inset-4 rounded-3xl bg-cover bg-center opacity-25 mix-blend-multiply pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80')",
+                }}
+              />
 
-              {/* Main Technician Showcase Card */}
-              <div className="relative rounded-[28px] overflow-hidden border border-slate-200/80 bg-white shadow-2xl shadow-slate-300/40">
-                <div className="relative aspect-[4/4.8] w-full bg-slate-100 overflow-hidden">
-                  <Image
-                    src="/hero-fix.png"
-                    alt="Professional FixItNow Technician"
-                    fill
-                    className="object-cover object-top hover:scale-102 transition-transform duration-700 ease-out"
-                    priority
-                  />
-                  {/* Subtle lower gradient for card contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent" />
+              {/* Overlapping Organic Blob Shapes behind Technician */}
+              {/* 1. Warm Golden/Amber Blob (Upper Right) */}
+              <div className="absolute top-4 sm:top-8 right-2 sm:right-6 w-52 sm:w-64 h-52 sm:h-64 bg-[#FCD34D]/70 rounded-[45%_55%_65%_35%/50%_45%_55%_50%] pointer-events-none z-0" />
 
-                  {/* On-image status bar at bottom */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                    <div>
-                      <p className="text-xs font-medium text-orange-300 uppercase tracking-wider">
-                        Master Technician
-                      </p>
-                      <h4 className="text-base font-bold text-white leading-tight">
-                        Kamal Hossain
-                      </h4>
-                      <p className="text-xs text-slate-300">
-                        HVAC & Electrical Specialist • 7+ Yrs Exp
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-md text-xs font-bold">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                        <span>4.98</span>
-                      </div>
-                      <span className="text-[10px] text-slate-300 mt-0.5">380+ jobs</span>
-                    </div>
-                  </div>
-                </div>
+              {/* 2. Soft Fresh Green Blob (Upper Left / Behind verification badge) */}
+              <div className="absolute top-8 sm:top-12 left-4 sm:left-10 w-44 sm:w-56 h-44 sm:h-56 bg-[#6EE7B7]/75 rounded-[55%_45%_40%_60%/45%_55%_50%_50%] pointer-events-none z-0" />
+
+              {/* 3. Warm Orange Blob (Lower Left / Waist level) */}
+              <div className="absolute bottom-6 sm:bottom-12 left-2 sm:left-6 w-48 sm:w-60 h-48 sm:h-60 bg-[#FF7700]/80 rounded-[50%_50%_60%_40%/60%_40%_50%_50%] pointer-events-none z-0" />
+
+              {/* 4. Small Green Verification Badge near shoulder */}
+              <div className="absolute top-[30%] sm:top-[32%] right-[16%] sm:right-[18%] z-20 size-9 sm:size-10 rounded-full bg-[#10B981] text-white flex items-center justify-center shadow-lg shadow-emerald-500/35 border-2 border-white pointer-events-none">
+                <ShieldCheck className="size-5" />
               </div>
 
-              {/* Floating Badge 1: Live Technician Availability */}
-              <motion.div
-                className="absolute -top-4 -left-4 sm:-left-6 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-100 shadow-slate-900/10 flex items-center gap-3 z-20"
-                variants={floatVariant1}
-                animate="float"
-              >
-                <div className="relative flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-                  <Wrench className="w-5 h-5 text-emerald-600" />
-                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-                  </span>
+              {/* 5. Handwritten-style Label ("Skilled Verified Ready!") with curved arrow */}
+              <div className="absolute top-0 sm:top-2 right-0 sm:right-2 z-20 flex flex-col items-end pointer-events-none">
+                <div className="font-serif italic font-extrabold text-[#1E293B] text-lg sm:text-xl leading-[1.1] tracking-wide text-right">
+                  <span>Skilled</span><br />
+                  <span>Verified</span><br />
+                  <span className="text-[#FF6B00]">Ready!</span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-slate-900">Available Now</span>
-                    <span className="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded">
-                      Live
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500">Instant response in ~20m</p>
-                </div>
-              </motion.div>
+                {/* Curved Orange Arrow pointing toward the technician */}
+                <svg
+                  className="w-10 sm:w-12 h-8 sm:h-9 text-[#FF6B00] mr-4 mt-1"
+                  viewBox="0 0 60 40"
+                  fill="none"
+                >
+                  <path
+                    d="M48,4 C42,16 30,28 12,32 M12,32 L22,26 M12,32 L20,38"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
 
-              {/* Floating Badge 2: 30-Day Guarantee */}
-              <motion.div
-                className="absolute -bottom-5 -right-3 sm:-right-5 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-xl border border-slate-100 shadow-slate-900/10 flex items-center gap-3 z-20"
-                variants={floatVariant2}
-                animate="float"
-              >
-                <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/20">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs font-bold text-slate-900">FixItNow Guarantee</span>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-orange-600" />
-                  </div>
-                  <p className="text-[11px] text-slate-500">
-                    30-Day Free Re-work Warranty
-                  </p>
-                </div>
-              </motion.div>
+              {/* 6. Floating Transparent Technician Cutout */}
+              <div className="relative z-10 w-[290px] sm:w-[350px] lg:w-[410px] h-[340px] sm:h-[410px] lg:h-[480px] pointer-events-none">
+                <Image
+                  src="/hero-fix.png"
+                  alt="Professional FixPro Technician"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 300px, (max-width: 1024px) 360px, 420px"
+                  className="object-contain object-bottom drop-shadow-[0_16px_28px_rgba(0,0,0,0.35)]"
+                />
+              </div>
             </div>
           </motion.div>
         </motion.div>
